@@ -1,0 +1,21 @@
+--- 
+title: "Simulation and Optimization"
+author: "Seth Berry"
+date: "`r Sys.Date()`"
+site: "bookdown::bookdown_site"
+output:
+  bookdown::html_book: 
+    toc: yes
+    css: toc.css
+documentclass: book
+---
+
+# Introduction
+
+All type of business
+
+## Code
+
+```{r}
+summary(mtcars)
+```

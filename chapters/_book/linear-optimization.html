@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>1 Preface | Simulation and Optimization</title>
+<title>3 Linear Optimization | Simulation and Optimization</title>
 <meta name="author" content="Seth Berry">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.8/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
@@ -31,9 +31,9 @@
 
       <nav aria-label="Table of contents"><h2>Table of contents</h2>
         <ul class="book-toc list-unstyled">
-<li><a class="active" href="index.html"><span class="header-section-number">1</span> Preface</a></li>
+<li><a class="" href="index.html"><span class="header-section-number">1</span> Preface</a></li>
 <li><a class="" href="introduction.html"><span class="header-section-number">2</span> Introduction</a></li>
-<li><a class="" href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></li>
+<li><a class="active" href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></li>
 <li><a class="" href="simulation.html"><span class="header-section-number">4</span> Simulation</a></li>
 <li><a class="" href="nonlinear-optimization.html"><span class="header-section-number">5</span> Nonlinear Optimization</a></li>
 </ul>
@@ -43,26 +43,45 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><!--bookdown:title:end--><!--bookdown:title:start--><div id="preface" class="section level1" number="1">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="linear-optimization" class="section level1" number="3">
 <h1>
-<span class="header-section-number">1</span> Preface<a class="anchor" aria-label="anchor" href="#preface"><i class="fas fa-link"></i></a>
+<span class="header-section-number">3</span> Linear Optimization<a class="anchor" aria-label="anchor" href="#linear-optimization"><i class="fas fa-link"></i></a>
 </h1>
-<p>You will find some form of this course in undergraduate and graduate business programs across the country. Instead of telling you what you should be looking for in such a class, it is easier to tell you what you shouldn’t see:</p>
-<ol style="list-style-type: decimal">
-<li><p>Excel</p></li>
-<li><p>Excel Add-ins</p></li>
-<li><p>Palasaides</p></li>
-</ol>
-<p>While the world runs on Excel, doing Simulation and Optimization in Excel will only ensure that you know Excel (can you use a VLookUp and sumproduct). Instead, the focus will be on understanding and implementing. You <em>will</em> be able to break problems down into the smallest parts and then roll those parts into objects. Throughout our time, we will get our hands dirty with some theory. These dives into theory will only serve to ease into greater understanding. In the end, however, the goal is application.</p>
-<p>These techniques also serve as a nice introduction to programming in general, as they will allow us to scale from simple objects to very complex pipelines. Throughout our time here, we will mostly focus on using R. However, we don’t live in a monolingual world anymore. To that end, we will see how some of these techniques translate to other languages (namely Python and Julia) and why we might want to consider one program over the other (speed, feature complete, ease, etc.).</p>
+<p>The king of analytics tools.</p>
+<div id="problems" class="section level2" number="3.1">
+<h2>
+<span class="header-section-number">3.1</span> Problems<a class="anchor" aria-label="anchor" href="#problems"><i class="fas fa-link"></i></a>
+</h2>
+</div>
+<div id="theory" class="section level2" number="3.2">
+<h2>
+<span class="header-section-number">3.2</span> Theory<a class="anchor" aria-label="anchor" href="#theory"><i class="fas fa-link"></i></a>
+</h2>
+</div>
+<div id="application" class="section level2" number="3.3">
+<h2>
+<span class="header-section-number">3.3</span> Application<a class="anchor" aria-label="anchor" href="#application"><i class="fas fa-link"></i></a>
+</h2>
+</div>
+<div id="additional-resources" class="section level2" number="3.4">
+<h2>
+<span class="header-section-number">3.4</span> Additional Resources<a class="anchor" aria-label="anchor" href="#additional-resources"><i class="fas fa-link"></i></a>
+</h2>
 
 </div>
+</div>
   <div class="chapter-nav">
-<div class="empty"></div>
-<div class="next"><a href="introduction.html"><span class="header-section-number">2</span> Introduction</a></div>
+<div class="prev"><a href="introduction.html"><span class="header-section-number">2</span> Introduction</a></div>
+<div class="next"><a href="simulation.html"><span class="header-section-number">4</span> Simulation</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#preface"><span class="header-section-number">1</span> Preface</a></li></ul>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#linear-optimization"><span class="header-section-number">3</span> Linear Optimization</a></li>
+<li><a class="nav-link" href="#problems"><span class="header-section-number">3.1</span> Problems</a></li>
+<li><a class="nav-link" href="#theory"><span class="header-section-number">3.2</span> Theory</a></li>
+<li><a class="nav-link" href="#application"><span class="header-section-number">3.3</span> Application</a></li>
+<li><a class="nav-link" href="#additional-resources"><span class="header-section-number">3.4</span> Additional Resources</a></li>
+</ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">

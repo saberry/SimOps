@@ -1,3 +1,11 @@
 # Nonlinear Optimization
 
 Things don't follow straight lines.
+
+## Problems
+
+## Theory
+
+## Application
+
+## Additional Resources

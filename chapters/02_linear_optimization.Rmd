@@ -1,3 +1,11 @@
 # Linear Optimization
 
 The king of analytics tools.
+
+## Problems
+
+## Theory
+
+## Application
+
+## Additional Resources

@@ -2,8 +2,9 @@
 ### Render rmd files to book ###
 ################################
 
+library(bookdown)
 
-
-bookdown::render_book("chapters/", "bookdown::tufte_html_book")
+bookdown::render_book("chapters/", 
+                      bs4_book(theme = bs_theme(bootswatch = "cyborg")))
 
 bookdown::render_book("chapters/", "bookdown::pdf_book")

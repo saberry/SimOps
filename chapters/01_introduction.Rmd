@@ -3,19 +3,9 @@ title: "Simulation and Optimization"
 author: "Seth Berry"
 date: "`r Sys.Date()`"
 site: "bookdown::bookdown_site"
-output:
-  bookdown::html_book: 
-    toc: yes
-    css: toc.css
 documentclass: book
 ---
 
 # Introduction
 
-All type of business
-
-## Code
-
-```{r}
-summary(mtcars)
-```
+In a world of exciting methods, simulation and optimization sit alone. Nobody touts how these things will change humanity. Nobody discusses how these methods can solve all of the world's problems. No...those conversations are reserved for things like statistical methods, machine learning, and the almighty AI! The secret, though, is that all of these fancy techniques do not exist without simulation and optimization. 

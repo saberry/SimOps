@@ -3,6 +3,7 @@
 ################################
 
 library(bookdown)
+library(bslib)
 
 bookdown::render_book("chapters/", 
                       bs4_book(theme = bs_theme(bootswatch = "cyborg")))

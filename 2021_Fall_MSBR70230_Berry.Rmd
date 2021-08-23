@@ -1,0 +1,137 @@
+---
+title: |  
+      | Simulation & Optimization
+      | MSBR 70230
+header-includes:
+   - \usepackage[dvipsnames]{xcolor}
+output: pdf_document
+fontsize: 12pt
+urlcolor: CornflowerBlue
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALSE, comment = "")
+```
+
+# Office: 337 Mendoza
+
+# Email: seth.berry@nd.edu
+
+# Office Hours
+
+Monday through Thursday: 10:00 to 12:00
+
+Most Fridays: 10:00 to 2:00
+
+# Class Days and Time
+
+Monday and Wednesday: Stayer B003
+
+- Section 1: 1:00 - 2:50
+
+- Section 2: 3:00 - 4:50
+
+# Course Objectives
+
+By the end of the course, you will be able to:
+
+- Identify problems that can be solved using advanced quantitative techniques, like linear programming and simulation.
+
+- Translate word-based optimization problems into mathematical expressions for further programming.
+
+- Know when to apply specific types of optimization problems.
+
+- Recognize how statistical distributions can be related to real-life situations.
+
+- Program simulations using programming languages of your choice.
+
+# Course Activities
+
+## Readings
+
+There is no *official* textbook for this course. There will, however, be readings posted for each topic. You are not committed to the readings, but they will certainly provide an expanded understanding of the content. 
+
+## Class Flow
+
+You will have time to look over course materials before class, so come ready to discuss the material and ask any questions that you might have. We will use our class time to *extend, discuss, and practice*. We will use a variety of different techniques to share our ideas with each other and the class as a whole.
+
+## Class Exercises
+
+Each day, you will be given the opportunity to practice problems related to the material. Although these exercises will not be "graded", you will submit whatever you did for the day before the end of class.
+
+## Homework
+
+There will be three assignments which will be graded. These assignments and suggested due dates will be announced during the class. Each person should turn in their own assignment, but you are absolutely free to collaborate with people in class. Collaboration does not meaning copying -- it means that you have worked together to solve the problem and both people have their own unique answers to the problem. It is advised to start the assignments early and bring questions to office hours.
+
+A significant portion of your grade will come from the homework skills map. The skills roadmap has different levels (bronze, silver, and gold). Each level must be completed in order (i.e., you cannot skip silver and go straight to gold from bronze). Silver and gold levels essentially act as modifiers to not only your grade, but also your understanding.
+
+Please feel free to work together on the bronze level of homework (i.e., not the optional sections), but each assignment needs to be your own work.  Putting your heads together to formulate an analytic attack plan is perfect (we all stands on the shoulders of giants), but copying and pasting text from each other is unacceptable. In other words, your code and words should not look like one of your classmate's. 
+
+## Presentations
+
+The final for this class will be a group presentation (and accompanying write-up). You will be graded on the in-class presentation, the write-up, and peer evaluations.
+
+# Grading
+
+Daily work -- 100 points (16%)
+
+Homework -- 90 points (29%)
+
+Final Presentation -- 100 points (32%)
+
+Total -- 290 points
+
+
+\newpage
+
+# Schedule
+
+```{r, results='asis'}
+library(dplyr)
+data.frame(Week = c(1, "", 2, "", 3, "",
+                    4, "", 5, "", 6, "", 
+                    7, ""),
+          Date = c("08/23 (M)", 
+                   "08/25 (W)",
+                   "08/30 (M)", 
+                   "09/01 (W)", 
+                   "09/06 (M)", 
+                   "09/08 (W)", 
+                   "09/13 (M)", 
+                   "09/15 (W)", 
+                   "09/20 (M)", 
+                   "09/22 (W)", 
+                   "09/27 (M)",
+                   "09/29 (W)",
+                   "10/04 (M)",
+                   "10/07 (Tr)"), 
+          Topic = c("Iteration", 
+                    "R Markdown", 
+                    "Linear Programming 1", 
+                    "Linear Programming 2",
+                    "Integer Programming 1", 
+                    "Integer Programming 2", 
+                    "Nonlinear Programming",
+                    "Monte Carlo Simulation 1", 
+                    "Monte Carlo Simulation 2",
+                    "Process Simulation",
+                    "Process Simulation", 
+                    "Project Day", 
+                    "Project Day", 
+                    "Presentations"), 
+           Assignments = c("", 
+                        "", 
+                        "", 
+                        "HW1",
+                        "",
+                        "",
+                        "HW2",
+                        "",
+                        "",
+                        "HW3",
+                        "",
+                        "",
+                        "",
+                        "")) %>% 
+  stargazer::stargazer(., summary = FALSE, header = FALSE, title = "Tentative Schedule")
+```

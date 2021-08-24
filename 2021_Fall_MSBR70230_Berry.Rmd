@@ -37,47 +37,49 @@ By the end of the course, you will be able to:
 
 - Identify problems that can be solved using advanced quantitative techniques, like linear programming and simulation.
 
-- Translate word-based optimization problems into mathematical expressions for further programming.
+- Translate word-based optimization problems into mathematical expressions.
 
-- Know when to apply specific types of optimization problems.
+- Understand the link between optimization, statistics, and machine learning.
+
+- Know when to apply specific types of optimization to various problems.
 
 - Recognize how statistical distributions can be related to real-life situations.
 
 - Program simulations using programming languages of your choice.
 
+- Identify key concepts related to linear process flows.
+
 # Course Activities
 
 ## Readings
 
-There is no *official* textbook for this course. There will, however, be readings posted for each topic. You are not committed to the readings, but they will certainly provide an expanded understanding of the content. 
+There is no *official* textbook for this course. There will, however, be readings posted for each topic. You are not committed to the readings, but they will certainly provide an expanded understanding of the content. All readings will be from free resources. 
 
 ## Class Flow
 
-You will have time to look over course materials before class, so come ready to discuss the material and ask any questions that you might have. We will use our class time to *extend, discuss, and practice*. We will use a variety of different techniques to share our ideas with each other and the class as a whole.
+You will have time to review the course notes days before class, so come ready to discuss the material and ask any questions that you might have. We will use our class time to *extend, discuss, and practice*. We will use a variety of different techniques to share our ideas with each other and the class as a whole.
 
 ## Class Exercises
 
-Each day, you will be given the opportunity to practice problems related to the material. Although these exercises will not be "graded", you will submit whatever you did for the day before the end of class.
+Each day, you will be given the opportunity to practice problems related to the material. Although these exercises will not be "graded", you will submit whatever you did for the day before the end of class. Engaging in class is the best way to learn the material!
 
 ## Homework
 
-There will be three assignments which will be graded. These assignments and suggested due dates will be announced during the class. Each person should turn in their own assignment, but you are absolutely free to collaborate with people in class. Collaboration does not meaning copying -- it means that you have worked together to solve the problem and both people have their own unique answers to the problem. It is advised to start the assignments early and bring questions to office hours.
+There will be three assignments which will be graded; these assignments will come from the major topics within our class. The assignments and suggested due dates will be announced during the class. Each person should turn in their own assignment, but you are absolutely free to collaborate with people in class. Collaboration does not meaning copying -- it means that you have worked together to solve the problem and both people have their own unique answers to the problem. It is advised to start the assignments early and bring questions to office hours.
 
-A significant portion of your grade will come from the homework skills map. The skills roadmap has different levels (bronze, silver, and gold). Each level must be completed in order (i.e., you cannot skip silver and go straight to gold from bronze). Silver and gold levels essentially act as modifiers to not only your grade, but also your understanding.
+Homework assignments are broken down into three tiers -- bronze, silver, and gold -- and the difficulty scales with each. Grading for each assignment will be done in waves. After submitting your assignment, we will have a short meeting about your assignment, and you can correct anything that you need to correct.
 
-Please feel free to work together on the bronze level of homework (i.e., not the optional sections), but each assignment needs to be your own work.  Putting your heads together to formulate an analytic attack plan is perfect (we all stands on the shoulders of giants), but copying and pasting text from each other is unacceptable. In other words, your code and words should not look like one of your classmate's. 
-
-## Presentations
+## Presentation/Project
 
 The final for this class will be a group presentation (and accompanying write-up). You will be graded on the in-class presentation, the write-up, and peer evaluations.
 
 # Grading
 
-Daily work -- 100 points (16%)
+Daily work -- 100 points
 
-Homework -- 90 points (29%)
+Homework -- 90 points
 
-Final Presentation -- 100 points (32%)
+Final Presentation -- 100 points
 
 Total -- 290 points
 

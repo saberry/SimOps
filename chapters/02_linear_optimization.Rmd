@@ -440,11 +440,3 @@ solver.Objective().Value()
 x.solution_value()
 y.solution_value()
 ```
-
-## Integer Programming
-
-### Binary Programming
-
-### Mixed Integer Programming
-
-## Additional Resources

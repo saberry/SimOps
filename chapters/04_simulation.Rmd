@@ -1,11 +1,15 @@
 # Simulation
 
-Programming the world around you.
+Why are you looking this far ahead? 
 
-## Problems
+Focus on the present instead.
 
-## Theory
+<!-- Programming the world around you. -->
 
-## Application
+<!-- ## Problems -->
 
-## Additional Resources
+<!-- ## Theory -->
+
+<!-- ## Application -->
+
+<!-- ## Additional Resources -->

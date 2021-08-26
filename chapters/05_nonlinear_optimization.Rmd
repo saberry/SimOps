@@ -1,11 +1,13 @@
 # Nonlinear Optimization
 
-Things don't follow straight lines.
+While you have clearly taken a linear line to get to this point, you should probably go backwards across your linear line.
 
-## Problems
+<!-- Things don't follow straight lines. -->
 
-## Theory
+<!-- ## Problems -->
 
-## Application
+<!-- ## Theory -->
 
-## Additional Resources
+<!-- ## Application -->
+
+<!-- ## Additional Resources -->

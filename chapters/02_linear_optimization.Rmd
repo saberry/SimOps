@@ -45,9 +45,9 @@ Ali thought for a minute and decided that there are two variables to this proble
 "Awesome! The value for Instagram is 50 and the value for TikTok is 20.", Ali said. "And what specifically are those?", Jun asked. Ali wasn't sure, but said, "ad costs". "Now, let me show you something.", and Jun wrote this on a piece of paper:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{ad cost} = 50_{instagram} + 20_{tiktok}
-\end{align}
+\end{aligned}
 $$
 
 "What else do we need?", asked Jun. Ali thought for a minute and said, "We need to get the rest of the information into the problem!"
@@ -59,11 +59,11 @@ $$
 "Let's put that into our problem", and Jun was back to writing:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{ad cost} = 50_{instagram} + 20_{tiktok} \\
 1_{instagram} + 4_{tiktok} \\
 .9_{instagram} + .8_{tiktok}
-\end{align}
+\end{aligned}
 $$
 
 "Did Rayan have an specific needs for those men and women?", asked Jun. Again, Ali looked at the email and saw:
@@ -77,23 +77,23 @@ $$
 "Excellent! Check this out", and Jun added the following:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{ad cost} = 50_{x1} + 20_{x2} \\
 \text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
 \text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
-\end{align}
+\end{aligned}
 $$
 
 "And we are almost there!", Jun smiled and then asked, "What would we want to do with cost: spend as much as possible or as little as possible?" "Oh", Ali said, "that's easy: we definitely want to minimize our cost."
 
 $$
-\begin{align}
+\begin{aligned}
 \text{Minimize:}\\
 \text{ad cost} = 50_{instagram} + 20_{tiktok} \\
 \text{Subject to:} \\
 \text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
 \text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
-\end{align}
+\end{aligned}
 $$
 
 "Here's the last question", Jun said, "Could we buy a negative number of ads?". "Absolutely not", Ali said.
@@ -101,14 +101,14 @@ $$
 "We have this now", and Jun showed Ali his paper
 
 $$
-\begin{align}
+\begin{aligned}
 \text{Minimize:}\\
 \text{ad cost} = 50_{instagram} + 20_{tiktok} \\
 \text{Subject to:} \\
 \text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
 \text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
 \text{instagram}, \text{tiktok} \geq 0
-\end{align}
+\end{aligned}
 $$
 
 "Now that we have this put completely together, we need to break it down", Jun laughed.
@@ -122,11 +122,11 @@ Jun carried on, "We also know that we have some rules to follow for our problem.
 "Let's see them again", Jun said:
 
 $$
-\begin{align}
+\begin{aligned}
 \text{Subject to:} \\
 \text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
 \text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
-\end{align}
+\end{aligned}
 $$
 
 "This whole thing is the **constraint matrix** and we can break it down into its component parts!", beamed Jun.
@@ -134,28 +134,28 @@ $$
 "Let's start with the **left-hand side** of the constraint matrix, which you might hear referred to as the **A matrix**.  
 
 $$
-\begin{align}
+\begin{aligned}
 1_{instagram} + 4_{tiktok} \\
 .9_{instagram} + .8_{tiktok} \\
-\end{align}
+\end{aligned}
 $$
 "We have 4 values, spread across 2 columns and 2 rows.", Jun said, "Just like a normal table". Jun continued, "Next we come to the **directions**...those things look like inequalities, but we will also probably encounter some equalities too".  
 
 "Here, we just have a simple **vector** of those signs.", Jun wrote:
 
 $$
-\begin{align}
+\begin{aligned}
 \geq \\
 \geq
-\end{align}
+\end{aligned}
 $$
 
 "Last thing, I promise.", Jun said: "The **right hand side**, those values that we need to achieve, are referred to as the **marginal values**."
 
-$$ \begin{align}
+$$ \begin{aligned}
 80 \\
 40
-\end{align}
+\end{aligned}
 $$ 
 
 "Tolu said that you were going to program these in Q or Boa, or something like that. I can't help you there, but let me know if I can do anything else for you", Jun said and walked back to the office.
@@ -248,14 +248,14 @@ Like all early-career analysts, Ali was feeling beaten -- going back to Jun so q
 Jun reminded Ali of the complete notation they had created together.
 
 $$
-\begin{align}
+\begin{aligned}
 \text{Minimize:}\\
 \text{ad cost} = 50_{instagram} + 20_{tiktok} \\
 \text{Subject to:} \\
 \text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
 \text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
 \text{instagram}, \text{tiktok} \geq 0
-\end{align}
+\end{aligned}
 $$
 
 "Let's break this down a little bit", and turning to the whiteboard, Jun wrote:
@@ -369,15 +369,11 @@ This was to be an important lesson for Ali: analytics tasks are never a one-shot
 
 After a quick email exchange with Rayan from Marketing, Ali found out that at least 10 ads were needed for Instagram.
 
-### ClassOverflow (Done In Class)
+### ClassOverflow
 
 Let's spend some time helping Ali. We need to do two things: 1) specify an appropriate model and 2) solve it.
 
 We will do this two different ways; both are good to know, but I'd imagine that you will find one to be more valuable than the other.
-
-#### Additional Problems
-
-Let's work on solving a few more problems together. 
 
 ### Using Python
 
@@ -385,8 +381,8 @@ A great chunk of Ali's coursework was in R, with just some excursions into Pytho
 
 The `pulp` package is going to look different than what we saw in R, but there are some definite improvements in expressing our model:
 
-```{python}
-from pulp import LpMaximize, LpProblem, LpStatus, lpSum, LpVariable, LpMinimize
+```{python, eval = FALSE}
+from pulp import *
 
 model = LpProblem(name = "test-model", 
   sense = LpMinimize)

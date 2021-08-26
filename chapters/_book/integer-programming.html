@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>5 Simulation | Simulation and Optimization</title>
+<title>4 Integer Programming | Simulation and Optimization</title>
 <meta name="author" content="Seth Berry">
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.8/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
@@ -34,8 +34,8 @@
 <li><a class="" href="index.html"><span class="header-section-number">1</span> Preface</a></li>
 <li><a class="" href="introduction.html"><span class="header-section-number">2</span> Introduction</a></li>
 <li><a class="" href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></li>
-<li><a class="" href="integer-programming.html"><span class="header-section-number">4</span> Integer Programming</a></li>
-<li><a class="active" href="simulation.html"><span class="header-section-number">5</span> Simulation</a></li>
+<li><a class="active" href="integer-programming.html"><span class="header-section-number">4</span> Integer Programming</a></li>
+<li><a class="" href="simulation.html"><span class="header-section-number">5</span> Simulation</a></li>
 <li><a class="" href="nonlinear-optimization.html"><span class="header-section-number">6</span> Nonlinear Optimization</a></li>
 </ul>
 
@@ -44,25 +44,67 @@
         </div>
       </nav>
 </div>
-  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="simulation" class="section level1" number="5">
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="integer-programming" class="section level1" number="4">
 <h1>
-<span class="header-section-number">5</span> Simulation<a class="anchor" aria-label="anchor" href="#simulation"><i class="fas fa-link"></i></a>
+<span class="header-section-number">4</span> Integer Programming<a class="anchor" aria-label="anchor" href="#integer-programming"><i class="fas fa-link"></i></a>
 </h1>
-<p>Why are you looking this far ahead?</p>
-<p>Focus on the present instead.</p>
-<!-- Programming the world around you. -->
-<!-- ## Problems -->
-<!-- ## Theory -->
-<!-- ## Application -->
-<!-- ## Additional Resources -->
+<p>You have gone just a little too far.</p>
+<p>You will find the previous chapter to be more enlightening at this time.</p>
+<!-- ## Troubling Solutions -->
+<!-- Ali had figured out the whole linear programming thing and all felt good -- until a troubling solution came back. -->
+<!-- As per usual, trouble began with an email: -->
+<!-- > What's good Ali? I'm Bao, from our retail operations group! We heard that you are a wizard with this stuff, so we are hoping that you can help us out. -->
+<!-- > We have an issue in many of our stores: we often find that we are overstocked on certain edibles, but others we can't keep on the shelf. We'd love to balance that out, but aren't really sure if saying, "Just change production", is the answer. No matter what we make for batches, we would obviously like to do it for as cheap as possible. -->
+<!-- > Here is the basics of what we have to deal with: -->
+<!-- 4p = candy -->
+<!-- 3p = gummy -->
+<!-- legs = raw flower -->
+<!-- seat = distillate -->
+<!-- backs = pressed trichromes -->
+<!-- > 1. We have two primary classes of edibles: gummies and candy bars -->
+<!-- > 2. We aren't really worried about ingredients other than what is grown in our greenhouses -->
+<!-- > 3. To make a batch of candy, it requires 4 grams of raw flower, 1 gram of distillates, and 1 gram of pressed trichromes -->
+<!-- > 4. To make a batch of gummies, it requires 3 grams of raw flower and 1 gram of distillates. -->
+<!-- > 5. Every month, we start with 200 grams of raw flower, 500 grams of distallate, and 100 grams of pressed trichromes. -->
+<!-- > 6. If a store needs more, they can purchase a standard bag of raw flower for 80 dollars per bag.  -->
+<!-- > 7. A bag of raw flower can produce 10 grams of distallate, 20 grams of raw flower, and 2 grams of pressed trichromes -->
+<!-- > 8. Producing candy costs 30 dollars per batch; producing gummies costs 40 dollars a batch -->
+<!-- > 9. We need at least 1000 units per month. -->
+<!-- > We owe you one! -->
+<!-- > Bao -->
+<!-- ```{r} -->
+<!-- library(linprog) -->
+<!-- cvec <- c(candy = 30,  -->
+<!--           gummies = 40,  -->
+<!--           bag = 80) -->
+<!-- bvec <- c(distillate = 500,  -->
+<!--           flower = 200,  -->
+<!--           trichromes = 100,  -->
+<!--           batch_need = 1000) -->
+<!-- constDirs <- c("<=", "<=", "<=", ">=") -->
+<!-- aMat <- rbind(c(1, 1, -10),  -->
+<!--               c(4, 3, -20),  -->
+<!--               c(1, 0, -2), -->
+<!--               c(1, 1, 0)) -->
+<!-- linprog::solveLP(cvec, bvec, aMat, maximum = FALSE,  -->
+<!--                  const.dir = constDirs) -->
+<!-- ``` -->
+<!-- What in the actual...those numbers cannot be correct. How do you make .222 of something? Is that acceptable? On second thought, could you ever buy half of an ad? Just to be sure, Ali checked every value and everything matched just fine. So what could be causing the problem and how can it be fixed? -->
+<!-- Looks like another visit to Jun.  -->
+<!-- ```{r} -->
+<!-- library(lpSolve) -->
+<!-- test <- lpSolve::lp(direction = "min", objective.in = cvec,  -->
+<!--             const.mat = aMat, const.dir = constDirs,  -->
+<!--             const.rhs = bvec, all.int = TRUE) -->
+<!-- ``` -->
 
 </div>
   <div class="chapter-nav">
-<div class="prev"><a href="integer-programming.html"><span class="header-section-number">4</span> Integer Programming</a></div>
-<div class="next"><a href="nonlinear-optimization.html"><span class="header-section-number">6</span> Nonlinear Optimization</a></div>
+<div class="prev"><a href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></div>
+<div class="next"><a href="simulation.html"><span class="header-section-number">5</span> Simulation</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#simulation"><span class="header-section-number">5</span> Simulation</a></li></ul>
+      <ul class="nav navbar-nav"><li><a class="nav-link" href="#integer-programming"><span class="header-section-number">4</span> Integer Programming</a></li></ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">

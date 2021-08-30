@@ -1,0 +1,110 @@
+---
+title: "Homework 1"
+author: "Sim/Ops"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```
+
+## Bronze
+
+### Question 1: Production Cost Minimization
+
+Code the following model so that you minimize production and storage costs over a 4 month period:
+
+$$
+Min: \sum\limits_{i=1}^4 (12m_i + 2s_i) \\
+m1 - s1 = 100 \\
+s1 + m2 - s2 = 200 \\
+s2 + m3 - s3 = 150 \\
+s3 + m4 - s4 = 400 \\
+m1 \leq 400 \\
+m2 \leq 400 \\
+m3 \leq 300 \\
+m4 \leq 300
+$$
+
+What is the total cost for this problem? Provide a very brief explanation of the first 4 constraints.
+
+### Question 2: Convenience Store Diet
+
+The average resident of Paris, Illinois needs to consume at least 2000 calories a day from the nearest convenience store; naturally, it needs to be done as cheaply as possible and a healthy diet typically consists of at least 10 ounces of sugar. A slice of pizza costs 3 dollars, coffee is 1 dollar, Red Bull is usually on sale for 1.50 per can, and candy bars cost 1 dollar.
+
+A slice of pizza contains 285 calories and practically 0 sugar.
+
+A cup of sweet coffee contains 1/2 oz of sugar and 100 calories.
+
+A can of Red Bull contains 168 calories and 2 oz of sugar.
+
+A candy bar contains about 200 calories and 3 oz of sugar.
+
+What is the total cost to consume the proper amount of food and how much of each food should be bought?
+
+
+### Question 3: Steel Mill Emissions
+
+A steel mill is trying to reduce emissions of three particular kinds of air pollutants.
+
+The following are clean air standards for the facility (in millions of pounds):
+
+```{r}
+data.frame(pollutant = c("particulates", "sulfer oxides", "hydrocarbons"), 
+           requiredReduction = c(60, 150, 125))
+```
+
+The steel mill has two major sources of these pollutants: blast furnaces and open-hearth furnances. To reduce the pollutants from these two furnace types, engineers are exploring using taller smokestacks, filters, and cleaner fuels.
+
+The following are maximum estimated reduction rates (in millions of pounds) for various abatement methods:
+
+```{r}
+data.frame(pollutant = c("particulates", "sulfer oxides", "hydrocarbons"), 
+           ts_blastFurnace = c(12, 35, 37), 
+           ts_openHearth = c(9, 42, 53), 
+           filter_blastFurnace = c(25, 18, 28), 
+           filter_openHearth = c(20, 31, 24), 
+           fuels_blastFurnace = c(17, 56, 29), 
+           fuels_openHearth = c(13, 49, 20))
+```
+
+Each of these abatement methods can be used to any proportion.
+
+The following table specifies the cost for fully-adopting each method (if the proportion is 1):
+
+```{r}
+data.frame(method = c("taller smokestacks", "filters", "fuels"), 
+           blastFurnaces = c(8, 7, 11), 
+           openHearth = c(10, 6, 9))
+```
+
+
+The ultimate goal of the steel mill is to minimize the money spent on each abatement method, while hitting the require reduction thresholds.
+
+This creates the following linear program:
+
+$$Minimize Z = 8_{x1} + 10_{x2} +7_{x3} +6_{x4} + 11_{x5} + 9_{x6}$$
+
+**Subject to the following emission reduction constrains:**
+
+$$12_{x1} + 9_{x2} + 25_{x3} + 20_{x4} + 17_{x5} + 13_{x6} \geq 60 \\
+35_{x1} + 42_{x2} + 18_{x3} + 31_{x4} + 56_{x5} + 49_{x6} \geq 150 \\
+37_{x1} + 53_{x2} + 28_{x3} + 24_{x4} + 29_{x5} + 20_{x6} \geq 125
+$$
+
+**Subject to the following technology limitation constrains:**
+
+$$x_j \leq 1$$
+
+What is each abatement methods optimal proportion?
+
+
+## Silver
+
+Let's extend that question 1 just a little bit more.
+
+The cost of production over the next four months will go up by 2 dollars a month, starting at 12 dollars. Every unit that gets made needs to go into storage and it requires 2 dollars to store each unit. Every unit made requires 30 minutes of labor and labor costs 12 dollars per hour. Fortunately, exact demand and available labor are known months in advance and are as follows: demand = 100, 200, 150, 400; max labor hours = 200, 200, 150, 150. Anything made during a month can be stored and reused the following month. Add labor costs and resources to your model, and then report 
+
+## Gold
+
+The hardest of all questions -- put down your Google and create your own linear optimization problem! It can be a minimization or maximization problem. You need at least 3 variables and at least 3 constraints. Explain the set-up, write the notation, code it up, and then tell me what you found! Seriously, no need to involve Google in this -- come up with something on your own.

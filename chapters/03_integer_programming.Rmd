@@ -1,9 +1,5 @@
 # Integer Programming
 
-You have gone just a little too far. 
-
-You will find the previous chapter to be more enlightening at this time.
-
 ## Troubling Solutions
 
 Ali had figured out the whole linear programming thing and all felt good -- until a troubling solution came back.
@@ -15,13 +11,6 @@ As per usual, trouble began with an email:
 > We have an issue in many of our stores: we often find that we are overstocked on certain edibles, but we can't keep others on the shelf. We'd love to balance that out, but aren't really sure if saying, "Just change production", is the answer. No matter what we make for batches, we would obviously like to do it for as cheap as possible.
 
 > Here is the basics of what we have to deal with:
-
-4p = candy
-3p = gummy
-
-legs = raw flower
-seat = distillate
-backs = pressed trichromes
 
 > 1. We have two primary classes of edibles: gummies and candy bars.
 
@@ -39,12 +28,13 @@ backs = pressed trichromes
 
 > 8. Producing candy costs 30 dollars per batch; producing gummies costs 40 dollars a batch
 
-> 9. We need at least 1000 units per month.
+> 9. We need at least 1000 selling units per month.
 
 > We owe you one!
 
 > Bao
 
+"Oh yeah", though Ali, "this is going to be a walk in the park."
 
 ```{r}
 library(linprog)
@@ -65,8 +55,8 @@ aMat <- rbind(dis_const = c(1, 1, -10),
               trich_const = c(1, 0, -2),
               batch_const = c(1, 1, 0))
 
-linprog::solveLP(cvec, bvec, aMat, maximum = FALSE,
-                 const.dir = constDirs)
+solveLP(cvec, bvec, aMat, maximum = FALSE,
+        const.dir = constDirs)
 ```
 
 That is great! Make 422.222 batches of candy, 577.778 batches of gummies, and buy 161.111 bags...
@@ -77,13 +67,9 @@ Just to be sure, Ali checked every value and everything matched just fine. So wh
 
 Looks like another visit to Jun...who just so happens to be on vacation.
 
-### Cuts, Branches, and Bounds
-
-
-
 ## ClassOverflow
 
-Let's spend some time diving into a new package and exploring one that we've already seen!
+Let's spend some time exploring some package functionality:
 
 ```{r}
 library(lpSolve)
@@ -92,4 +78,110 @@ test <- lpSolve::lp(direction = "min", objective.in = cvec,
             const.mat = aMat, const.dir = constDirs,
             const.rhs = bvec, all.int = TRUE, compute.sens = 1)
 ```
+
+Remember ROI from last time? It has some pretty handy functionality. 
+
+```{r}
+library(ROI)
+library(ROI.plugin.glpk)
+```
+
+We can use all of the objects that we have already created
+
+```{r}
+model_constraints <- L_constraint(L = aMat, 
+                                  dir = constDirs, 
+                                  rhs = bvec)
+
+model_creation <- OP(objective = cvec, 
+                     constraints = model_constraints, 
+                     types = rep("I", length(cvec)), 
+                     maximum = FALSE)
+
+model_solved <- ROI_solve(model_creation)
+
+solution(model_solved, "primal")
+solution(model_solved, "objval")
+```
+
+Now, Ali knows to make 420 units of candy (coincidence?), 580 units of gummies, and 161 bags.
+
+All we have done in either case is to constrain the possible solution set to only include integer values. The "how" of this is substantially more complicated. 
+
+What follows is purely a cursory glance -- if you are interested in knowing more, you can check out the resources!
+
+1. The most naive approach is to solve as a linear programming problem (i.e., LP relaxation) and then round the results
+
+2. Some matrices are *totally unimodular* (no big concern for us) and will always return an integer value.
+
+3. Cutting planes solve the LP relaxation, test if the optimal value is integer. A non-integer solution will get reworked as a constraint and this process continues until an optimal integer solution is found.
+
+4. Branch and bound algorithms produces possible solution sets and transverses subsets of those sets to find an answer.
+
+5. Branch and cut algorithms combine the previous 2 approaches.
+
+## Binary Integer Programming
+
+After sending an updated solution to Bao, Ali felt some sense of relief -- learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn't long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.
+
+Castel's problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:
+
+Castel drew a map for the cost to move product between greenhouses and processing facilities:
+
+```{r, echo = FALSE}
+library(visNetwork)
+
+ndf <- data.frame(id = 1:7,
+    shape = c("triangle", "triangle", "triangle", 
+              "square", "square", "square", "square"),
+    label = c("greenhouse_1", "greenhouse_2", "greenhouse_3", 
+             "processing_1", "processing_2",
+             "processing_3", "processing_4"))
+
+edf <- data.frame(from = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
+                     to = c(4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7),
+                     label = c("35", "30", "40", "32", "37", "40",
+                             "42", "25", "40", "15", "20", "28"))
+
+visNetwork(ndf, edf) %>% 
+  visEdges(arrows = "to") %>% 
+  visLayout(improvedLayout = TRUE)
+
+```
+
+And then added the following notes:
+
+> Greenhouse 1 can only contribute 1200 pounds
+
+> Greenhouse 2 can only contribute 1000 pounds
+
+> Greenhouse 3 can only contribute 800 pounds
+
+> Processing facility 1 needs at least 1100 pounds
+
+> Processing facility 2 needs at least 400 pounds
+
+> Processing facility 3 needs at least 750 pounds
+
+> Processing facility 4 needs at least 750 pounds
+
+> How much should each greenhouse send to each processing facility and do it as cheaply as possible?
+
+Ali had all of the necessary information, so took Castel's words and translated them into an expression:
+
+$$
+\begin{aligned}
+M = 35_{x_{11}} + 30_{x_{12}} + 40_{x_{13}} + 32_{x_{14}} + 37_{x_{21}} + 40_{x_{22}} + \\
+42_{x_{23}} + 25_{x_{24}} + 40_{x_{31}} + 15_{x_{32}} + 20_{x_{33}} + 28_{x_{34}} \\
+subject \, to \\
+X_{11} + X_{12} + X_{13} + X_{14} \leq 1200 \\
+X_{21} + X_{22} + X_{23} + X_{24} \leq 1000 \\
+X_{31} + X_{32} + X_{33} + X_{34} \leq 800 \\
+X_{11} + X_{21} + X_{31} \geq 1100 \\
+X_{12} + X_{22} + X_{23} \geq 400 \\
+X_{13} + X_{23} + X_{33} \geq 750 \\
+X_{14} + X_{24} + X_{34} \geq 750 \\
+X_{ij} \geq 0
+\end{aligned}
+$$
 

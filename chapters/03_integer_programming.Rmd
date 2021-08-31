@@ -120,8 +120,6 @@ What follows is purely a cursory glance -- if you are interested in knowing more
 
 5. Branch and cut algorithms combine the previous 2 approaches.
 
-## Binary Integer Programming
-
 After sending an updated solution to Bao, Ali felt some sense of relief -- learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn't long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.
 
 Castel's problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:
@@ -184,4 +182,70 @@ X_{14} + X_{24} + X_{34} \geq 750 \\
 X_{ij} \geq 0
 \end{aligned}
 $$
+
+```{r}
+cMat <- c(35, 30, 40, 32, 37, 40,
+     42, 25, 40, 15, 20, 28)
+
+b <- c(1200, 1000, 800, 1100, 400, 750, 750)
+
+A <- rbind(c(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0), 
+           c(0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0),
+           c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1), 
+           c(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0),
+           c(0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0), 
+           c(0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0),
+           c(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+
+constraints <- L_constraint(A, 
+                            c(rep("<=", 3), rep(">=", 4)), 
+                            b)
+
+model <- OP(objective = cMat, 
+            constraints = constraints,
+            types = rep.int("I", length(cMat)), 
+            maximum = FALSE)
+
+result <- ROI::ROI_solve(model, "glpk", verbose = TRUE)
+
+result$objval
+
+solution(result)
+```
+
+## Binary Integer Programming
+
+The *transportation problem* proved to be an easy one, once it was broken down into it's mathematical expression. Blaise's request, though, proved to be a bit more challenging.
+
+
+HOLD FOR CONTENT
+
+Turns out, that Blaise was just asking for some version of a *knapsack* or *bin-packing* problem:
+
+```{r}
+library(ROI)
+
+library(ROI.plugin.glpk)
+
+n <- 10 # Setting our number of variables
+
+W <- 20 # Our max weight
+
+v <- round(runif(n, min = 1, max = 5)) # A random assignment of our values
+
+v
+
+w <- runif(n, min = 1, max = 7) # Random weights
+
+w
+
+constraints <- L_constraint(w, "<=", W) # Creating the constraints
+
+model <- OP(objective = v, 
+            constraints = constraints,
+            bounds = V_bound(li = 1:n, lb = rep.int(0, n), ui = 1:n, ub = rep.int(1, n)), 
+            types = rep.int("B", n), 
+            maximum = TRUE)
+model
+```
 

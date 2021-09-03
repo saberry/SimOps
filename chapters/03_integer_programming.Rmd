@@ -120,6 +120,8 @@ What follows is purely a cursory glance -- if you are interested in knowing more
 
 5. Branch and cut algorithms combine the previous 2 approaches.
 
+## Transportation Problems
+
 After sending an updated solution to Bao, Ali felt some sense of relief -- learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn't long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.
 
 Castel's problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:
@@ -218,14 +220,41 @@ solution(result)
 The *transportation problem* proved to be an easy one, once it was broken down into it's mathematical expression. Blaise's request, though, proved to be a bit more challenging.
 
 
-HOLD FOR CONTENT
 
-Turns out, that Blaise was just asking for some version of a *knapsack* or *bin-packing* problem:
+> How's life, my unmet friend?
+
+> We've got a situation in our *connoisseur's cabinet* -- it is where we keep the expensive stuff.
+
+> We only have room for a single feature cabinet, so we can't put everything that we have into it.
+
+> I'd like to put things in there that won't take up a ton of space, but will also bring in the cash.
+
+> The list of products, prices, and space is attached. I can't use any more than 10 spaces.
+
+> Any ideas?
+
+> Blaise
+
+Turns out, that Blaise was just asking for some version of a *knapsack* problem:
 
 ```{r}
 library(ROI)
 
 library(ROI.plugin.glpk)
+
+special_items <- data.frame(item = c("cannabis_caviar", "oracle", "fruity_pebbles", 
+                                     "loud_dream", "white_fire", "j1", 
+                                     "hammerhead", "sista", "goblin", 
+                                     "fishermen", "cloud", "paradise"), 
+                            space = c(1.5, 1, 1, 
+                                      1.25, 1, 1, 
+                                      6, 5, 6, 
+                                      7, 3, 2), 
+                            value = c(800, 450, 400, 
+                                      400, 500, 350, 
+                                      1600, 2325, 1005, 
+                                      750, 250, 875))
+
 
 n <- 10 # Setting our number of variables
 
@@ -239,13 +268,17 @@ w <- runif(n, min = 1, max = 7) # Random weights
 
 w
 
-constraints <- L_constraint(w, "<=", W) # Creating the constraints
+constraints <- L_constraint(special_items$space, "<=", 10) # Creating the constraints
 
-model <- OP(objective = v, 
+model <- OP(objective = special_items$value, 
             constraints = constraints,
-            bounds = V_bound(li = 1:n, lb = rep.int(0, n), ui = 1:n, ub = rep.int(1, n)), 
-            types = rep.int("B", n), 
+            #bounds = V_bound(li = 1:n, lb = rep.int(0, n), ui = 1:n, ub = rep.int(1, n)), 
+            types = rep.int("B", 12), 
             maximum = TRUE)
 model
+
+solved_model <- ROI_solve(model)
+
+solution(solved_model)
 ```
 

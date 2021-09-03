@@ -1,3 +1,35 @@
+flow_data <- data.frame(from = c(1,1,1,2,2,3,4,4,5,6), 
+                        to = c(2,3,4,4,7,5,5,6,7,7), 
+                        ID = 1:10, 
+                        cost = c(3,1,7,2,6,10,1,1,4,4))
+
+all_nodes <- c(flow_data$from, flow_data$to) |> 
+  unique()
+
+node_flow_complete <- matrix(0, ncol = nrow(flow_data), 
+                             nrow = length(all_nodes), 
+                             dimnames = list(all_nodes, 
+                                             flow_data$ID))
+
+for(i in all_nodes) {
+  input_node <- flow_data$ID[flow_data$to == i]
+  
+  output_node <- flow_data$ID[flow_data$from == i]
+  
+  node_flow_complete[rownames(node_flow_complete)  == i, 
+                     colnames(node_flow_complete) %in% input_node] <- 1
+  
+  node_flow_complete[rownames(node_flow_complete) == i, 
+                     colnames(node_flow_complete) %in% output_node] <- -1
+  
+}
+
+node_flow_complete
+
+dimnames(node_flow_complete) <- list(paste0("node_", all_nodes), 
+               paste0("from_", flow_data$from, 
+                      "_to_", flow_data$to))
+
 cvec <- c(var1_2 = 3, 
           var1_3 = 1, 
           var1_4 = 7, 

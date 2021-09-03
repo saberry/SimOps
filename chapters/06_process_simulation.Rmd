@@ -1,0 +1,210 @@
+# Process Simulation
+
+Ali was absolutely smoked (no pun intended) after handling all of that optimization -- hopefully some more standard modeling would come through. High hopes are always short lived, though, and Ali was thrown right back into the dark arts of Operations-based research.
+
+Alex was the resident expert of simulations of all kind, so Ali knew an ally was there. 
+
+> Hi Ali
+
+## Discrete Event Simulation
+
+
+
+## Queueing Theory
+
+Queues have their own notation (Kendall's notation). 
+
+$A/B/C/D$
+
+Where:
+
+$A = arrival\, process$
+
+$B = service\, process$
+
+$C = server\, number$
+
+$D = que\, capacity$
+
+$M/D/k$
+
+$M/M/k$
+
+*M* generally stands for Markov or Exponential
+
+<aside>
+You might also see *M* described as being from a Poisson process
+</aside>
+
+*D* is deterministic: all jobs require a fixed amount of time.
+
+*k* is the number of servers/workers/etc.
+
+Both of these are generally assumed to have an infinite buffer.
+
+If a queue is $M/D/k$, we can easily compute some helpful statistics (we don't need any fancy software to help us).
+
+$\lambda$ = arrival rate
+
+$\mu$ = service rate
+
+$\rho = \frac{\lambda}{\mu}$ = utilization
+
+Average number of entities in the system is:
+
+$$ L = \rho + \frac{1}{2}\Bigg(\frac{\rho^2}{1 - \rho}\Bigg) $$
+
+Average number in queue:
+
+$$ L_Q = \frac{1}{2}\Bigg(\frac{\rho^2}{1 - \rho}\Bigg) $$
+
+Average system waiting time:
+
+$$ \omega = \frac{1}{\mu}+\frac{\rho}{2\mu(1 - \rho)} $$
+
+Average waiting time in queue:
+
+$$ \omega_Q = \frac{\rho}{2\mu(1 - \rho)} $$
+
+## Process Flow Map
+
+How does the flow for a bank typically look:
+
+1.  A customer enters the bank through the door.
+
+2.  The customer will either go directly to a teller or wait in line for the teller.
+
+3.  Teller will serve the customer.
+
+4.  The customer has been served and will exit the bank.
+
+```{r}
+library(DiagrammeR)
+
+grViz("
+digraph {
+  graph [overlap = true, fontsize = 10, rankdir = LR]
+  
+  node [shape = box, style = filled, color = black, fillcolor = aliceblue]
+  A [label = 'Door']
+  B [label = 'Line']
+  C [label = 'Teller']
+  D [label = 'Served Customer']
+
+  A->B B->C C->D
+}
+")
+```
+
+## Distributions
+
+### Normal Distribution
+
+For our normal distribution, we know the $\mu$ and $\sigma$.
+
+```{r, echo = FALSE}
+library(dplyr)
+
+library(ggplot2)
+
+data.frame(x = rnorm(10000, mean = 2.5, sd = .5)) %>% 
+  ggplot(., aes(x = x, y = ..density..)) +
+  geom_histogram(color = "black", fill = "white", bins = 15) +
+  geom_density(color = "#ff5500", size = 1.25) +
+  theme_minimal() +
+  labs(x = "Call Center Wait Times", y = "Frequency")
+```
+
+
+### Exponential Distribution
+
+We can only know one thing about the exponential distribution: $\mu$ (also expressed as a rate).
+
+```{r, echo = FALSE}
+data.frame(x = rexp(10000, rate = 2.5)) %>% 
+  ggplot(., aes(x = x)) +
+  geom_histogram(color = "black", fill = "white", bins = 15) +
+  theme_minimal() +
+  labs(x = "Call Center Wait Times", y = "Frequency")
+```
+
+### Poisson Distribution
+
+The poisson is an interesting distribution -- it tends to deal with count-related variables. It tells us the probability of a count occuring.  We know its $\lambda$ (again, a rate).
+
+<aside>
+
+$\lambda$ is just a fancy way of saying the average number of events, or the incidence rate.
+
+</aside>
+
+```{r, echo = FALSE}
+data.frame(x = rpois(10000, lambda = 4)) %>% 
+  ggplot(., aes(x = x)) +
+  geom_bar(color = "black", fill = "white") +
+  theme_minimal() +
+  labs(x = "Customers In Line", y = "Frequency")
+```
+
+### Uniform Distribution
+
+While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not -- I would say that distinction belongs to the uniform distribution. We don't even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range.
+
+```{r, echo = FALSE}
+data.frame(x = runif(10000, min = 1, max = 10)) %>% 
+  round(.) %>% 
+  ggplot(., aes(x = x)) +
+  geom_bar(color = "black", fill = "white") +
+  theme_minimal() +
+  labs(x = "Customers In Line", y = "Frequency")
+```
+
+## Performance
+
+The *service level* for each simulation is the fraction of the demand that is satisfied.
+
+$$ Entrance  \: Service \: Level = \frac{Objects \: Entering}{Objects \: Entering + Objects \: Unable \: To \: Enter}$$
+
+Here, we are looking at the number of people who wanted to join the process, but could not. If we have a service level of 1, then 100% of objects were able to get into the process. A service level of .5 would indicate that only 50% of objects were able to enter.
+
+The *overall mean service level* of the process is the mean of the service levels calculated from each simulation.
+
+The *mean cycle time* at a buffer is the mean amount of time an object takes to move through the buffer during a simulation.
+
+The *overall mean cycle time* at a buffer is the mean of the mean cycle time of the buffer for each simulation.
+
+<aside>
+You will see different words for lines: buffers and queues. Just know that they are used interchangeably. 
+</aside>
+
+## The Dispensary
+
+The interarrival times for customers follows an exponential distribution with $\mu = 2 \, minutes$.
+
+The dispensary cannot hold any more than 8 people, for safety reasons. If a person arrives when the line is full, that person will not get in line.
+
+The bud tender's service time can be approximated by a normal distribution with $\mu = 2.4 \, minutes$ and $\sigma = .5 \, minutes$.
+
+```{r}
+library(DiagrammeR)
+grViz("
+digraph {
+  graph [overlap = true, fontsize = 10, rankdir = LR]
+  
+  node [shape = box, style = filled, color = black, fillcolor = aliceblue]
+  
+  A [label = 'Door']
+  B [label = 'Line']
+  C [label = 'Teller 1']
+  D [label = 'Teller 2']
+  E [label = 'Served']
+  
+  A->B 
+  B->C
+  B->D
+  C->E
+  D->E
+}
+")
+
+```

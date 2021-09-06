@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>3 Linear Optimization | Simulation and Optimization</title>
+<meta name="author" content="Seth Berry">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.8/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><script src="libs/viz-1.8.2/viz.js"></script><link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script><link href="libs/vis-4.20.1/vis.css" rel="stylesheet">
+<script src="libs/vis-4.20.1/vis.min.js"></script><script src="libs/visNetwork-binding-2.0.9/visNetwork.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Simulation and Optimization</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html"><span class="header-section-number">1</span> Preface</a></li>
+<li><a class="" href="introduction.html"><span class="header-section-number">2</span> Introduction</a></li>
+<li><a class="active" href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></li>
+<li><a class="" href="process-simulation.html"><span class="header-section-number">4</span> Process Simulation</a></li>
+<li><a class="" href="integer-programming.html"><span class="header-section-number">5</span> Integer Programming</a></li>
+<li><a class="" href="simulation.html"><span class="header-section-number">6</span> Simulation</a></li>
+</ul>
+
+        <div class="book-extra">
+          
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="linear-optimization" class="section level1" number="3">
+<h1>
+<span class="header-section-number">3</span> Linear Optimization<a class="anchor" aria-label="anchor" href="#linear-optimization"><i class="fas fa-link"></i></a>
+</h1>
+<p>Ali’s first task was to determine a marketing strategy. Both the Canadian and American cannabis industries are trying to normalize cannabis use (mainly through edibles and drinks) to women between the ages of 30 and 55. The working theory is that making cannabis use acceptable to this group will “allow” married men to also enjoy recreational cannabis use.</p>
+<p>Ali’s manager, Tolu, has asked to create a semi-automated system for determining advertisement spends. Thankfully, Tolu noted that Ali’s coworker, Jun, has already been working in this space. Ali should be able to jump on Jun’s work and make this system automated without much hassle.</p>
+<div id="continuous-optimization" class="section level2" number="3.1">
+<h2>
+<span class="header-section-number">3.1</span> Continuous Optimization<a class="anchor" aria-label="anchor" href="#continuous-optimization"><i class="fas fa-link"></i></a>
+</h2>
+<div id="the-problem" class="section level3" number="3.1.1">
+<h3>
+<span class="header-section-number">3.1.1</span> The Problem<a class="anchor" aria-label="anchor" href="#the-problem"><i class="fas fa-link"></i></a>
+</h3>
+<p>What should have been an easy task became a nightmare. Ali didn’t get a csv file with neatly defined columns and a clear outcome variable. No…Ali received this email (in which Jun was copied):</p>
+<blockquote>
+<p>Hi Ali,</p>
+</blockquote>
+<blockquote>
+<p>Here is what Rayan from Marketing needs:</p>
+</blockquote>
+<blockquote>
+<p>Instagram ads cost $50 dollars per hundred clicks</p>
+</blockquote>
+<blockquote>
+<p>TikTok ads cost $20 dollars per hundred clicks</p>
+</blockquote>
+<blockquote>
+<p>Over the last few weeks, we averaged about 1 female view for Instagram and 4 for TikTok. We need at least 80 female views in total for the coming week.</p>
+</blockquote>
+<blockquote>
+<p>We don’t really do as well with men; we saw just about 1 average male view for both Instagram (.9) and TikTok (.8). We are really hoping to get at least 40 for the coming week.</p>
+</blockquote>
+<blockquote>
+<p>Where should we buy ads for the coming week?</p>
+</blockquote>
+<blockquote>
+<p>All my best,</p>
+</blockquote>
+<blockquote>
+<p>Tolu</p>
+</blockquote>
+</div>
+<div id="from-words-to-formulas" class="section level3" number="3.1.2">
+<h3>
+<span class="header-section-number">3.1.2</span> From Words To Formulas<a class="anchor" aria-label="anchor" href="#from-words-to-formulas"><i class="fas fa-link"></i></a>
+</h3>
+<p>In typical analyst fashion, Ali responded with, “No problem!”, and started digging through old course notes. Unfortunately, nothing looked like this problem. Ali decided that a cup of coffee with Jun was the way to go. Before a coffee invite even went out, Jun sent Ali a copy of the legacy Excel sheet…completely full of Excel equations and Solver boxes.</p>
+<p>Ali had no idea what was going on in the sheet – there were <em>sumproduct</em> formulas, <em>vlookups</em>, and other strange things. Ali asked Jun to go over the sheet and the problem together, and Jun most graciously agreed.</p>
+<p>Jun helped Ali break the problem down into small pieces. “The first question”, Jun said, “is what are the variables and what are their values?”</p>
+<p>Ali thought for a minute and decided that there are two variables to this problem: Instagram and TikTok. “Correct!”, said Jun, “and what values do Instagram and TikTok have?” Ali went back to the email and saw:</p>
+<blockquote>
+<p>Instagram ads cost $50 dollars per hundred clicks</p>
+</blockquote>
+<blockquote>
+<p>TikTok ads cost $20 dollars per hundred clicks</p>
+</blockquote>
+<p>“Awesome! The value for Instagram is 50 and the value for TikTok is 20.”, Ali said. “And what specifically are those?”, Jun asked. Ali wasn’t sure, but said, “ad costs”. “Now, let me show you something.”, and Jun wrote this on a piece of paper:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{ad cost} = 50_{instagram} + 20_{tiktok}
+\end{aligned}
+\]</span></p>
+<p>“What else do we need?”, asked Jun. Ali thought for a minute and said, “We need to get the rest of the information into the problem!”</p>
+<blockquote>
+<p>Over the last few weeks, we averaged about 1 female view for Instagram and 4 for TikTok.</p>
+</blockquote>
+<blockquote>
+<p>We don’t really do as well with men; we saw just about 1 average male view for both Instagram (.9) and TikTok (.8)</p>
+</blockquote>
+<p>“Let’s put that into our problem”, and Jun was back to writing:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{ad cost} = 50_{instagram} + 20_{tiktok} \\
+1_{instagram} + 4_{tiktok} \\
+.9_{instagram} + .8_{tiktok}
+\end{aligned}
+\]</span></p>
+<p>“Did Rayan have an specific needs for those men and women?”, asked Jun. Again, Ali looked at the email and saw:</p>
+<blockquote>
+<p>We need at least 80 female views in total for the coming week.</p>
+</blockquote>
+<blockquote>
+<p>We are really hoping to get at least 40 for the coming week.</p>
+</blockquote>
+<p>“So,”, Ali began, “We need at least 80 views for women and 40 views for men. We could have more for both, though…it is just the baseline.”</p>
+<p>“Excellent! Check this out”, and Jun added the following:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{ad cost} = 50_{x1} + 20_{x2} \\
+\text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
+\text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
+\end{aligned}
+\]</span></p>
+<p>“And we are almost there!”, Jun smiled and then asked, “What would we want to do with cost: spend as much as possible or as little as possible?” “Oh”, Ali said, “that’s easy: we definitely want to minimize our cost.”</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Minimize:}\\
+\text{ad cost} = 50_{instagram} + 20_{tiktok} \\
+\text{Subject to:} \\
+\text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
+\text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
+\end{aligned}
+\]</span></p>
+<p>“Here’s the last question”, Jun said, “Could we buy a negative number of ads?”. “Absolutely not”, Ali said.</p>
+<p>“We have this now”, and Jun showed Ali his paper</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Minimize:}\\
+\text{ad cost} = 50_{instagram} + 20_{tiktok} \\
+\text{Subject to:} \\
+\text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
+\text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
+\text{instagram}, \text{tiktok} \geq 0
+\end{aligned}
+\]</span></p>
+<p>“Now that we have this put completely together, we need to break it down”, Jun laughed.</p>
+<p>“We know that this is a <strong>minimization</strong> problem”, Jun said and continued, “and we know that we have two <strong>variables</strong>: Instagram and TikTok. You may hear people call these <strong>objective values</strong>.”</p>
+<p>Jun carried on, “We also know that we have some rules to follow for our problem. These rules are called <strong>constraints</strong>. Think of these constraints as rules that reflect reality”.</p>
+<p>“Got it!”, exclaimed Ali.</p>
+<p>“Let’s see them again”, Jun said:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Subject to:} \\
+\text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
+\text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
+\end{aligned}
+\]</span></p>
+<p>“This whole thing is the <strong>constraint matrix</strong> and we can break it down into its component parts!”, beamed Jun.</p>
+<p>"Let’s start with the <strong>left-hand side</strong> of the constraint matrix, which you might hear referred to as the <strong>A matrix</strong>.</p>
+<p><span class="math display">\[
+\begin{aligned}
+1_{instagram} + 4_{tiktok} \\
+.9_{instagram} + .8_{tiktok} \\
+\end{aligned}
+\]</span>
+“We have 4 values, spread across 2 columns and 2 rows.”, Jun said, “Just like a normal table”. Jun continued, “Next we come to the <strong>directions</strong>…those things look like inequalities, but we will also probably encounter some equalities too”.</p>
+<p>“Here, we just have a simple <strong>vector</strong> of those signs.”, Jun wrote:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\geq \\
+\geq
+\end{aligned}
+\]</span></p>
+<p>“Last thing, I promise.”, Jun said: “The <strong>right hand side</strong>, those values that we need to achieve, are referred to as the <strong>marginal values</strong>.”</p>
+<p><span class="math display">\[ \begin{aligned}
+80 \\
+40
+\end{aligned}
+\]</span></p>
+<p>“Tolu said that you were going to program these in Q or Boa, or something like that. I can’t help you there, but let me know if I can do anything else for you”, Jun said and walked back to the office.</p>
+<p>Ali felt better, but getting all of that information into R was going to be a little bit tricky.</p>
+</div>
+<div id="application" class="section level3" number="3.1.3">
+<h3>
+<span class="header-section-number">3.1.3</span> Application<a class="anchor" aria-label="anchor" href="#application"><i class="fas fa-link"></i></a>
+</h3>
+<p>Ali was feeling pretty good after all of this! As soon as the computer was unlocked, StackOverlow came to the rescue – a user called Not_Prof_Berry had answered a few questions about linear programming with R.</p>
+<p>It seemed like Ali was going to need a package called <code>linprog</code>:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages('linprog')</span>
+
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://linprog.r-forge.r-project.org/">linprog</a></span><span class="op">)</span></code></pre></div>
+<p>The specific function is <code>solveLP</code>, but Ali saw that it needed some objects to be created first: <code>cvec</code>, <code>bvec</code>, <code>Amat</code>, and <code>const.dir</code>. Ali remembered a common mantra among professors – “Read the flipping manual!”. After reading the helpfile, Ali determined that the cvec object needed to contain the objective values:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">objective_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">20</span><span class="op">)</span></code></pre></div>
+<p>Ali then figured out that bvec came from the right-hand side of the constraint matrix (the values out in the margin of the constraint matrix):</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">constraint_values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">80</span>, <span class="fl">40</span><span class="op">)</span></code></pre></div>
+<p>The Amatrix felt a little bit tricky. It definitely needed to be the constraint matrix, but it was somewhat tough to get into the right shape. Ali tried a few things:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">constraint_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span><span class="op">)</span>, 
+                           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">.9</span>, <span class="fl">.8</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">constraint_matrix2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">.9</span>, <span class="fl">.8</span><span class="op">)</span>, 
+                             ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span>, 
+                             byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>Both returned a matrix:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">constraint_matrix</span><span class="op">)</span></code></pre></div>
+<pre><code> num [1:2, 1:2] 1 0.9 4 0.8</code></pre>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">constraint_matrix2</span><span class="op">)</span></code></pre></div>
+<pre><code> num [1:2, 1:2] 1 0.9 4 0.8</code></pre>
+<p>Which Ali knew was needed for function to work properly.</p>
+<p>Finally, Ali made a character vector of const.dir (i.e., the constraint directions):</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">constraint_directions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&gt;="</span>, <span class="st">"&gt;="</span><span class="op">)</span></code></pre></div>
+<p>With those 4 objects, Ali was ready to solve the problem!</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">solved_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/linprog/man/solveLP.html">solveLP</a></span><span class="op">(</span>cvec <span class="op">=</span> <span class="va">objective_values</span>, 
+                        bvec <span class="op">=</span> <span class="va">constraint_values</span>, 
+                        Amat <span class="op">=</span> <span class="va">constraint_matrix</span>, 
+                        maximum <span class="op">=</span> <span class="cn">FALSE</span>, 
+                        const.dir <span class="op">=</span> <span class="va">constraint_directions</span><span class="op">)</span></code></pre></div>
+<p>With the model solved, Ali needed to grab some information: the recommended values for Instagram and TikTok, and how much money it was going to cost.</p>
+<p>First, how much money was this going to cost:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">solved_model</span><span class="op">$</span><span class="va">opt</span></code></pre></div>
+<pre><code>[1] 1000</code></pre>
+<p>Got it. $1000 is the total spend.</p>
+<p>Second, what is the marketing mix:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">solved_model</span><span class="op">$</span><span class="va">solution</span></code></pre></div>
+<pre><code> 1  2 
+ 0 50 </code></pre>
+<p>That gives 0 ads for Instagram and 50 ads for TikTok! There is no way that is correct. Everyone knows that a 0 for an answer means that there has to be a problem. How could Ali take this solution to Tolu? Ali figured the best course of action would be to check the solution with Jun.</p>
+</div>
+<div id="theory" class="section level3" number="3.1.4">
+<h3>
+<span class="header-section-number">3.1.4</span> Theory<a class="anchor" aria-label="anchor" href="#theory"><i class="fas fa-link"></i></a>
+</h3>
+<p>Like all early-career analysts, Ali was feeling beaten – going back to Jun so quickly felt like a failure. Like all experienced analysts, Jun was only too happy to help and explain what was happening.</p>
+<p>Jun reminded Ali of the complete notation they had created together.</p>
+<p><span class="math display">\[
+\begin{aligned}
+\text{Minimize:}\\
+\text{ad cost} = 50_{instagram} + 20_{tiktok} \\
+\text{Subject to:} \\
+\text{women} = 1_{instagram} + 4_{tiktok} \geq 80 \\
+\text{men} = .9_{instagram} + .8_{tiktok} \geq 40 \\
+\text{instagram}, \text{tiktok} \geq 0
+\end{aligned}
+\]</span></p>
+<p>“Let’s break this down a little bit”, and turning to the whiteboard, Jun wrote:</p>
+<p><span class="math display">\[1_{instagram} + 4_{tiktok} = 80\]</span></p>
+<p>Can be solved with:</p>
+<p><span class="math display">\[(instagram = 0, tiktok = 20) \text{ or } (instagram = 80, tiktok = 0)\]</span></p>
+<p>And:</p>
+<p><span class="math display">\[.9_{instagram} + .8_{tiktok} = 40\]</span></p>
+<p>Can be solved with:</p>
+<p><span class="math display">\[(instagram = 44.44, tiktok = 0) \text{ or } (instagram = 0, tiktok = 50)\]</span></p>
+<p>“It’s okay if you don’t remember or didn’t take linear algebra”, Jun noted, “just know that we are solving these equations to obtain a set of points.”</p>
+<p>“Okay”, Ali nodded, “but what do we do with those points?”</p>
+<p>“Plot them”, and Jun went back to writing:</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-11-1.png" width="672"></div>
+<p>“Now that we have those lines plotted, we can clearly see where we might find our answer!”, beamed Jun.</p>
+<p>“Umm…it’s a little fuzzy”, admitted a puzzled Ali.</p>
+<p>“Completely to be expected”, Jun smiled. “Let’s find the <strong>feasible region</strong> – this is the place where our answer lives!”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-12-1.png" width="672"></div>
+<p>“We could go through and try every single set of points in this shaded area, but we would never finish and we would be wasting our time”, Jun chuckled and continued, “We already know that we are looking for the values that minimize our solution, so we can completely ignore every point that doesn’t sit on our lines.”</p>
+<p>Jun made a few circles on the plot and said, “These points will give us our answer!”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-13-1.png" width="672"></div>
+<p>“This is called the <strong>extreme point theorem</strong> and it basically says that our <strong>optimal</strong> solution has to rest somewhere in the extreme points of the feasible region”, said Jun, “and it makes life so much easier for finding our answer.”</p>
+<p>“We can just do the simple math now”, and Jun wrote"</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">insta_cost</span> <span class="op">=</span> <span class="fl">50</span>
+
+<span class="va">tt_cost</span> <span class="op">=</span> <span class="fl">20</span>
+
+<span class="va">insta_cost</span> <span class="op">*</span> <span class="fl">0</span> <span class="op">+</span> <span class="va">tt_cost</span> <span class="op">*</span> <span class="fl">50</span></code></pre></div>
+<pre><code>[1] 1000</code></pre>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">insta_cost</span> <span class="op">*</span> <span class="fl">34.32</span> <span class="op">+</span> <span class="va">tt_cost</span> <span class="op">*</span> <span class="fl">11.42</span></code></pre></div>
+<pre><code>[1] 1944.4</code></pre>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">insta_cost</span> <span class="op">*</span> <span class="fl">80</span> <span class="op">+</span> <span class="va">tt_cost</span> <span class="op">*</span> <span class="fl">0</span></code></pre></div>
+<pre><code>[1] 4000</code></pre>
+<p>“Which of those is the smallest value?”, Jun asked.</p>
+<p>The conference room glowed with Ali’s excitement! “I got it now!”, Ali exclaimed. “We can get our optimal value of 1000 by purchasing 50 ads on TikTok and 0 on Instagram! The solution was correct!”</p>
+<p>“Ahhh!”, Jun started laughing, “it is definitely the optimal solution, but do you <em>really</em> think that it’s the correct solution?” Jun shook his head and continued laughing, “How do you think Tolu is going to take the advice to not put anything at all on Instagram?”</p>
+<div style="width:100%;height:0;padding-bottom:100%;position:relative;">
+<iframe src="https://giphy.com/embed/75ZaxapnyMp2w" width="100%" height="100%" style="position:absolute" frameborder="0" class="giphy-embed" allowfullscreen>
+</iframe>
+</div>
+<p>
+<a href="https://giphy.com/gifs/75ZaxapnyMp2w">via GIPHY</a>
+</p>
+<p>Ali’s mind was sufficiently wrecked. How could an optimal answer not be the correct answer? Stupid analytics – nothing can ever be easy.</p>
+<p>“What’s the best path forward, then?”, Ali asked Jun. “Simple”, Jun replied, “ask how much they want to put on Instagram and that becomes a constraint!”</p>
+<p>This was to be an important lesson for Ali: analytics tasks are never a one-shot deal. Clarity needs to be sought before most work can actually happen.</p>
+<p>After a quick email exchange with Rayan from Marketing, Ali found out that at least 10 ads were needed for Instagram.</p>
+</div>
+<div id="classoverflow" class="section level3" number="3.1.5">
+<h3>
+<span class="header-section-number">3.1.5</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow"><i class="fas fa-link"></i></a>
+</h3>
+<p>Let’s spend some time helping Ali. We need to do two things: 1) specify an appropriate model and 2) solve it.</p>
+<p>We will do this two different ways; both are good to know, but I’d imagine that you will find one to be more valuable than the other.</p>
+</div>
+<div id="using-python" class="section level3" number="3.1.6">
+<h3>
+<span class="header-section-number">3.1.6</span> Using Python<a class="anchor" aria-label="anchor" href="#using-python"><i class="fas fa-link"></i></a>
+</h3>
+<p>A great chunk of Ali’s coursework was in R, with just some excursions into Python. For statistics, R reigns supreme (but statsmodels in Python is really pretty solid). For machine learning, take your pick (only fanboys speak in absolutes about one being better than the other – both have their pros and cons). Linear programming is a bit different. R has some clear advantages in terms of flexibility, but Google has put effort towards implementing their GLOP solver in Python (among other languages).</p>
+<p>The <code>pulp</code> package is going to look different than what we saw in R, but there are some definite improvements in expressing our model:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="linear-optimization.html#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pulp <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb21-2"><a href="linear-optimization.html#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="linear-optimization.html#cb21-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> LpProblem(name <span class="op">=</span> <span class="st">"test-model"</span>, </span>
+<span id="cb21-4"><a href="linear-optimization.html#cb21-4" aria-hidden="true" tabindex="-1"></a>  sense <span class="op">=</span> LpMinimize)</span>
+<span id="cb21-5"><a href="linear-optimization.html#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="linear-optimization.html#cb21-6" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> LpVariable(name <span class="op">=</span> <span class="st">"instagram"</span>, lowBound <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb21-7"><a href="linear-optimization.html#cb21-7" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> LpVariable(name <span class="op">=</span> <span class="st">"tiktok"</span>, lowBound <span class="op">=</span> <span class="dv">0</span>)</span>
+<span id="cb21-8"><a href="linear-optimization.html#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="linear-optimization.html#cb21-9" aria-hidden="true" tabindex="-1"></a>model <span class="op">+=</span> (<span class="dv">1</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> y <span class="op">&gt;=</span> <span class="dv">80</span>, <span class="st">"women"</span>)</span>
+<span id="cb21-10"><a href="linear-optimization.html#cb21-10" aria-hidden="true" tabindex="-1"></a>model <span class="op">+=</span> (<span class="fl">.9</span> <span class="op">*</span> x <span class="op">+</span> <span class="fl">.8</span> <span class="op">*</span> y <span class="op">&gt;=</span> <span class="dv">40</span>, <span class="st">"men"</span>)</span>
+<span id="cb21-11"><a href="linear-optimization.html#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="linear-optimization.html#cb21-12" aria-hidden="true" tabindex="-1"></a>obj_func <span class="op">=</span> <span class="dv">50</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">20</span> <span class="op">*</span> y</span>
+<span id="cb21-13"><a href="linear-optimization.html#cb21-13" aria-hidden="true" tabindex="-1"></a>model <span class="op">+=</span> obj_func</span>
+<span id="cb21-14"><a href="linear-optimization.html#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="linear-optimization.html#cb21-15" aria-hidden="true" tabindex="-1"></a>model</span>
+<span id="cb21-16"><a href="linear-optimization.html#cb21-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-17"><a href="linear-optimization.html#cb21-17" aria-hidden="true" tabindex="-1"></a>status <span class="op">=</span> model.solve()</span>
+<span id="cb21-18"><a href="linear-optimization.html#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="linear-optimization.html#cb21-19" aria-hidden="true" tabindex="-1"></a>model.objective.value()</span>
+<span id="cb21-20"><a href="linear-optimization.html#cb21-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-21"><a href="linear-optimization.html#cb21-21" aria-hidden="true" tabindex="-1"></a>x.value()</span>
+<span id="cb21-22"><a href="linear-optimization.html#cb21-22" aria-hidden="true" tabindex="-1"></a>y.value()</span>
+<span id="cb21-23"><a href="linear-optimization.html#cb21-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-24"><a href="linear-optimization.html#cb21-24" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> var <span class="kw">in</span> model.variables(): </span>
+<span id="cb21-25"><a href="linear-optimization.html#cb21-25" aria-hidden="true" tabindex="-1"></a>  <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>var<span class="sc">.</span>name<span class="sc">}</span><span class="ss">: </span><span class="sc">{</span>var<span class="sc">.</span>value()<span class="sc">}</span><span class="ss">"</span>)</span></code></pre></div>
+<p>We really aren’t breaking our problem down into small objects here. Instead, all we really need to do is to take our math form and pop that into our <code>model</code> – pretty easy stuff.</p>
+<p>Finally, here is Google’s OR tools. It is the current SoTA for optimization (how do you think Google gets people navigated). You’ll notice that we aren’t really doing anything too different than what we saw with <code>pulp</code>:</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="linear-optimization.html#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> ortools.linear_solver <span class="im">import</span> pywraplp</span>
+<span id="cb22-2"><a href="linear-optimization.html#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="linear-optimization.html#cb22-3" aria-hidden="true" tabindex="-1"></a>solver <span class="op">=</span> pywraplp.Solver.CreateSolver(<span class="st">'GLOP'</span>)</span>
+<span id="cb22-4"><a href="linear-optimization.html#cb22-4" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> solver.NumVar(<span class="dv">0</span>, solver.infinity(), <span class="st">'instagram'</span>)</span>
+<span id="cb22-5"><a href="linear-optimization.html#cb22-5" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> solver.NumVar(<span class="dv">0</span>, solver.infinity(), <span class="st">'tiktok'</span>)</span>
+<span id="cb22-6"><a href="linear-optimization.html#cb22-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-7"><a href="linear-optimization.html#cb22-7" aria-hidden="true" tabindex="-1"></a>solver.NumVariables()</span></code></pre></div>
+<pre><code>2</code></pre>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="linear-optimization.html#cb24-1" aria-hidden="true" tabindex="-1"></a>solver.Add(<span class="dv">1</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">4</span> <span class="op">*</span> y <span class="op">&gt;=</span> <span class="dv">80</span>)</span></code></pre></div>
+<pre><code>&lt;ortools.linear_solver.pywraplp.Constraint; proxy of &lt;Swig Object of type 'operations_research::MPConstraint *' at 0x7fb5303b7360&gt; &gt;</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="linear-optimization.html#cb26-1" aria-hidden="true" tabindex="-1"></a>solver.Add(<span class="fl">.9</span> <span class="op">*</span> x <span class="op">+</span> <span class="fl">.8</span> <span class="op">*</span> y <span class="op">&gt;=</span> <span class="dv">40</span>)</span></code></pre></div>
+<pre><code>&lt;ortools.linear_solver.pywraplp.Constraint; proxy of &lt;Swig Object of type 'operations_research::MPConstraint *' at 0x7fb5303b7450&gt; &gt;</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="linear-optimization.html#cb28-1" aria-hidden="true" tabindex="-1"></a>solver.NumConstraints()</span></code></pre></div>
+<pre><code>2</code></pre>
+<div class="sourceCode" id="cb30"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb30-1"><a href="linear-optimization.html#cb30-1" aria-hidden="true" tabindex="-1"></a>solver.Minimize(<span class="dv">50</span> <span class="op">*</span> x <span class="op">+</span> <span class="dv">20</span> <span class="op">*</span> y)</span>
+<span id="cb30-2"><a href="linear-optimization.html#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="linear-optimization.html#cb30-3" aria-hidden="true" tabindex="-1"></a>status <span class="op">=</span> solver.Solve()</span>
+<span id="cb30-4"><a href="linear-optimization.html#cb30-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-5"><a href="linear-optimization.html#cb30-5" aria-hidden="true" tabindex="-1"></a>solver.Objective().Value()</span></code></pre></div>
+<pre><code>999.9999999999999</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb32-1"><a href="linear-optimization.html#cb32-1" aria-hidden="true" tabindex="-1"></a>x.solution_value()</span></code></pre></div>
+<pre><code>0.0</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb34-1"><a href="linear-optimization.html#cb34-1" aria-hidden="true" tabindex="-1"></a>y.solution_value()</span></code></pre></div>
+<pre><code>49.99999999999999</code></pre>
+
+</div>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="introduction.html"><span class="header-section-number">2</span> Introduction</a></div>
+<div class="next"><a href="process-simulation.html"><span class="header-section-number">4</span> Process Simulation</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#linear-optimization"><span class="header-section-number">3</span> Linear Optimization</a></li>
+<li>
+<a class="nav-link" href="#continuous-optimization"><span class="header-section-number">3.1</span> Continuous Optimization</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#the-problem"><span class="header-section-number">3.1.1</span> The Problem</a></li>
+<li><a class="nav-link" href="#from-words-to-formulas"><span class="header-section-number">3.1.2</span> From Words To Formulas</a></li>
+<li><a class="nav-link" href="#application"><span class="header-section-number">3.1.3</span> Application</a></li>
+<li><a class="nav-link" href="#theory"><span class="header-section-number">3.1.4</span> Theory</a></li>
+<li><a class="nav-link" href="#classoverflow"><span class="header-section-number">3.1.5</span> ClassOverflow</a></li>
+<li><a class="nav-link" href="#using-python"><span class="header-section-number">3.1.6</span> Using Python</a></li>
+</ul>
+</li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+          
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

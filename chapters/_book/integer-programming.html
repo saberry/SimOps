@@ -9,7 +9,9 @@
 <!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.8/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
 <script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
-<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><link href="libs/vis-4.20.1/vis.css" rel="stylesheet">
+<script src="libs/vis-4.20.1/vis.min.js"></script><script src="libs/visNetwork-binding-2.0.9/visNetwork.js"></script><script src="libs/viz-1.8.2/viz.js"></script><link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
 </head>
 <body data-spy="scroll" data-target="#toc">
 
@@ -37,6 +39,7 @@
 <li><a class="active" href="integer-programming.html"><span class="header-section-number">4</span> Integer Programming</a></li>
 <li><a class="" href="simulation.html"><span class="header-section-number">5</span> Simulation</a></li>
 <li><a class="" href="nonlinear-optimization.html"><span class="header-section-number">6</span> Nonlinear Optimization</a></li>
+<li><a class="" href="process-simulation.html"><span class="header-section-number">7</span> Process Simulation</a></li>
 </ul>
 
         <div class="book-extra">
@@ -48,63 +51,465 @@
 <h1>
 <span class="header-section-number">4</span> Integer Programming<a class="anchor" aria-label="anchor" href="#integer-programming"><i class="fas fa-link"></i></a>
 </h1>
-<p>You have gone just a little too far.</p>
-<p>You will find the previous chapter to be more enlightening at this time.</p>
-<!-- ## Troubling Solutions -->
-<!-- Ali had figured out the whole linear programming thing and all felt good -- until a troubling solution came back. -->
-<!-- As per usual, trouble began with an email: -->
-<!-- > What's good Ali? I'm Bao, from our retail operations group! We heard that you are a wizard with this stuff, so we are hoping that you can help us out. -->
-<!-- > We have an issue in many of our stores: we often find that we are overstocked on certain edibles, but others we can't keep on the shelf. We'd love to balance that out, but aren't really sure if saying, "Just change production", is the answer. No matter what we make for batches, we would obviously like to do it for as cheap as possible. -->
-<!-- > Here is the basics of what we have to deal with: -->
-<!-- 4p = candy -->
-<!-- 3p = gummy -->
-<!-- legs = raw flower -->
-<!-- seat = distillate -->
-<!-- backs = pressed trichromes -->
-<!-- > 1. We have two primary classes of edibles: gummies and candy bars -->
-<!-- > 2. We aren't really worried about ingredients other than what is grown in our greenhouses -->
-<!-- > 3. To make a batch of candy, it requires 4 grams of raw flower, 1 gram of distillates, and 1 gram of pressed trichromes -->
-<!-- > 4. To make a batch of gummies, it requires 3 grams of raw flower and 1 gram of distillates. -->
-<!-- > 5. Every month, we start with 200 grams of raw flower, 500 grams of distallate, and 100 grams of pressed trichromes. -->
-<!-- > 6. If a store needs more, they can purchase a standard bag of raw flower for 80 dollars per bag.  -->
-<!-- > 7. A bag of raw flower can produce 10 grams of distallate, 20 grams of raw flower, and 2 grams of pressed trichromes -->
-<!-- > 8. Producing candy costs 30 dollars per batch; producing gummies costs 40 dollars a batch -->
-<!-- > 9. We need at least 1000 units per month. -->
-<!-- > We owe you one! -->
-<!-- > Bao -->
-<!-- ```{r} -->
-<!-- library(linprog) -->
-<!-- cvec <- c(candy = 30,  -->
-<!--           gummies = 40,  -->
-<!--           bag = 80) -->
-<!-- bvec <- c(distillate = 500,  -->
-<!--           flower = 200,  -->
-<!--           trichromes = 100,  -->
-<!--           batch_need = 1000) -->
-<!-- constDirs <- c("<=", "<=", "<=", ">=") -->
-<!-- aMat <- rbind(c(1, 1, -10),  -->
-<!--               c(4, 3, -20),  -->
-<!--               c(1, 0, -2), -->
-<!--               c(1, 1, 0)) -->
-<!-- linprog::solveLP(cvec, bvec, aMat, maximum = FALSE,  -->
-<!--                  const.dir = constDirs) -->
-<!-- ``` -->
-<!-- What in the actual...those numbers cannot be correct. How do you make .222 of something? Is that acceptable? On second thought, could you ever buy half of an ad? Just to be sure, Ali checked every value and everything matched just fine. So what could be causing the problem and how can it be fixed? -->
-<!-- Looks like another visit to Jun.  -->
-<!-- ```{r} -->
-<!-- library(lpSolve) -->
-<!-- test <- lpSolve::lp(direction = "min", objective.in = cvec,  -->
-<!--             const.mat = aMat, const.dir = constDirs,  -->
-<!--             const.rhs = bvec, all.int = TRUE) -->
-<!-- ``` -->
+<div id="troubling-solutions" class="section level2" number="4.1">
+<h2>
+<span class="header-section-number">4.1</span> Troubling Solutions<a class="anchor" aria-label="anchor" href="#troubling-solutions"><i class="fas fa-link"></i></a>
+</h2>
+<p>Ali had figured out the whole linear programming thing and all felt good – until a troubling solution came back.</p>
+<p>As per usual, trouble began with an email:</p>
+<blockquote>
+<p>What’s good Ali? I’m Bao, from our retail operations group! We heard that you are a wizard with this stuff, so we are hoping that you can help us out.</p>
+</blockquote>
+<blockquote>
+<p>We have an issue in many of our stores: we often find that we are overstocked on certain edibles, but we can’t keep others on the shelf. We’d love to balance that out, but aren’t really sure if saying, “Just change production”, is the answer. No matter what we make for batches, we would obviously like to do it for as cheap as possible.</p>
+</blockquote>
+<blockquote>
+<p>Here is the basics of what we have to deal with:</p>
+</blockquote>
+<blockquote>
+<ol style="list-style-type: decimal">
+<li>We have two primary classes of edibles: gummies and candy bars.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="2" style="list-style-type: decimal">
+<li>We aren’t really worried about ingredients other than what is grown in our greenhouses. Food supplies are easy, but green supplies aren’t.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="3" style="list-style-type: decimal">
+<li>To make a batch of candy, it requires 4 grams of raw flower, 1 gram of distillates, and 1 gram of pressed trichromes.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="4" style="list-style-type: decimal">
+<li>To make a batch of gummies, it requires 3 grams of raw flower and 1 gram of distillates.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="5" style="list-style-type: decimal">
+<li>Every month, we start with 200 grams of raw flower, 500 grams of distallate, and 100 grams of pressed trichromes.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="6" style="list-style-type: decimal">
+<li>If a store needs more, they can purchase a standard bag of raw flower for 80 dollars per bag.</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="7" style="list-style-type: decimal">
+<li>A bag of raw flower can produce 10 grams of distallate, 20 grams of raw flower, and 2 grams of pressed trichromes</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="8" style="list-style-type: decimal">
+<li>Producing candy costs 30 dollars per batch; producing gummies costs 40 dollars a batch</li>
+</ol>
+</blockquote>
+<blockquote>
+<ol start="9" style="list-style-type: decimal">
+<li>We need at least 1000 selling units per month.</li>
+</ol>
+</blockquote>
+<blockquote>
+<p>We owe you one!</p>
+</blockquote>
+<blockquote>
+<p>Bao</p>
+</blockquote>
+<p>“Oh yeah”, though Ali, “this is going to be a walk in the park.”</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://linprog.r-forge.r-project.org/">linprog</a></span><span class="op">)</span>
 
+<span class="co"># Remember...the c vector is the top part of the whole problem:</span>
+<span class="co"># 30candy + 40gummies + 80bag</span>
+
+<span class="va">cvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>candy <span class="op">=</span> <span class="fl">30</span>,
+          gummies <span class="op">=</span> <span class="fl">40</span>,
+          bag <span class="op">=</span> <span class="fl">80</span><span class="op">)</span>
+
+<span class="co"># The b vector is the margins of the problem:</span>
+<span class="co"># What comes on the right hand side of the </span>
+<span class="co"># equality sign.</span>
+
+<span class="va">bvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>distillate <span class="op">=</span> <span class="fl">500</span>,
+          flower <span class="op">=</span> <span class="fl">200</span>,
+          trichromes <span class="op">=</span> <span class="fl">100</span>,
+          batch_need <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span>
+
+<span class="co"># These are the directions -- hopefully not</span>
+<span class="co"># much of a mystery.</span>
+
+<span class="va">constDirs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"&lt;="</span>, <span class="st">"&lt;="</span>, <span class="st">"&lt;="</span>, <span class="st">"&gt;="</span><span class="op">)</span>
+
+<span class="co"># The a matrix comprises all of the rows of</span>
+<span class="co"># the constraint matrix (just not the margins</span>
+<span class="co"># or the directions).</span>
+
+<span class="co"># 1candy + 1gummies - 10bag</span>
+<span class="co"># 4candy + 3gummies - 20bag</span>
+<span class="co"># 1candy + 0gummies - 2bag</span>
+<span class="co"># 1candy + 1gummies + 0bag</span>
+
+<span class="va">aMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span>dis_const <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">10</span><span class="op">)</span>,
+              flow_const <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span>, <span class="op">-</span><span class="fl">20</span><span class="op">)</span>,
+              trich_const <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="op">-</span><span class="fl">2</span><span class="op">)</span>,
+              batch_const <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># All together, we have:</span>
+<span class="co"># 30candy + 40gummies + 80bag</span>
+<span class="co"># 1candy + 1gummies - 10bag &lt;= 500</span>
+<span class="co"># 4candy + 3gummies - 20bag &lt;= 200</span>
+<span class="co"># 1candy + 0gummies - 2bag &lt;= 100</span>
+<span class="co"># 1candy + 1gummies + 0bag &gt;= 1000</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/linprog/man/solveLP.html">solveLP</a></span><span class="op">(</span><span class="va">cvec</span>, <span class="va">bvec</span>, <span class="va">aMat</span>, maximum <span class="op">=</span> <span class="cn">FALSE</span>,
+        const.dir <span class="op">=</span> <span class="va">constDirs</span><span class="op">)</span></code></pre></div>
+<pre><code>
+
+Results of Linear Programming / Linear Optimization
+
+Objective function (Minimum): 48666.7 
+
+Iterations in phase 1: 2
+Iterations in phase 2: 1
+Solution
+            opt
+candy   422.222
+gummies 577.778
+bag     161.111
+
+Basic Variables
+                  opt
+candy         422.222
+gummies       577.778
+bag           161.111
+S distillate 1111.111
+
+Constraints
+             actual dir bvec    free     dual dual.reg
+distillate -611.111  &lt;=  500 1111.11  0.00000  1111.11
+flower      200.000  &lt;=  200    0.00  3.33333  5200.00
+trichromes  100.000  &lt;=  100    0.00  6.66667   380.00
+batch_need 1000.000  &gt;= 1000    0.00 50.00000      Inf
+
+All Variables (including slack variables)
+                  opt cvec      min.c max.c     marg marg.reg
+candy         422.222   30  -60.00000    36       NA       NA
+gummies       577.778   40  -46.00000    70       NA       NA
+bag           161.111   80 -140.00000   200       NA       NA
+S distillate 1111.111    0   -6.00000    12  0.00000       NA
+S flower        0.000    0   -3.33333   Inf  3.33333     5200
+S trichromes    0.000    0   -6.66667   Inf  6.66667      380
+S batch_need    0.000    0  -50.00000   Inf 50.00000      Inf</code></pre>
+<p>That is great! Make 422.222 batches of candy, 577.778 batches of gummies, and buy 161.111 bags…</p>
+<p>The first thing Ali though was, “What in the actual…those numbers cannot be correct. How do you make .222 of something? Is that acceptable? On second thought, could you ever buy a tenth of a bag?”</p>
+<p>Just to be sure, Ali checked every value and everything matched just fine. So what could be causing the problem and how can it be fixed?</p>
+<p>Looks like another visit to Jun…who just so happens to be on vacation.</p>
+</div>
+<div id="classoverflow-1" class="section level2" number="4.2">
+<h2>
+<span class="header-section-number">4.2</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow-1"><i class="fas fa-link"></i></a>
+</h2>
+<p>Let’s spend some time exploring some package functionality:</p>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gaborcsardi/lpSolve">lpSolve</a></span><span class="op">)</span>
+
+<span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">lpSolve</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lpSolve/man/lp.html">lp</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"min"</span>, objective.in <span class="op">=</span> <span class="va">cvec</span>,
+            const.mat <span class="op">=</span> <span class="va">aMat</span>, const.dir <span class="op">=</span> <span class="va">constDirs</span>,
+            const.rhs <span class="op">=</span> <span class="va">bvec</span>, all.int <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>Remember ROI from last time? It has some pretty handy functionality.</p>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://roi.r-forge.r-project.org/">ROI</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://roi.r-forge.r-project.org/">ROI.plugin.glpk</a></span><span class="op">)</span></code></pre></div>
+<p>We can use all of the objects that we have already created</p>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># When working within ROI, we string together the entire constraint</span>
+<span class="co"># matrix (A matrix, directions, and the b vector) using the L_constraint</span>
+<span class="co"># function</span>
+
+<span class="va">model_constraints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/L_constraint.html">L_constraint</a></span><span class="op">(</span>L <span class="op">=</span> <span class="va">aMat</span>, 
+                                  dir <span class="op">=</span> <span class="va">constDirs</span>, 
+                                  rhs <span class="op">=</span> <span class="va">bvec</span><span class="op">)</span>
+
+<span class="co"># After we string those together, we can throw them OP;</span>
+<span class="co"># this just creates the model, but doesn't actually </span>
+<span class="co"># solve the problem.</span>
+<span class="co"># The big difference below is in the types column; </span>
+<span class="co"># this changes it from continuous ("C") to </span>
+<span class="co"># integer ("I").</span>
+
+<span class="va">model_creation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/OP.html">OP</a></span><span class="op">(</span>objective <span class="op">=</span> <span class="va">cvec</span>, 
+                     constraints <span class="op">=</span> <span class="va">model_constraints</span>, 
+                     types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"I"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cvec</span><span class="op">)</span><span class="op">)</span>, 
+                     maximum <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="va">model_solved</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/ROI_solve.html">ROI_solve</a></span><span class="op">(</span><span class="va">model_creation</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">model_solved</span>, <span class="st">"primal"</span><span class="op">)</span></code></pre></div>
+<pre><code>  candy gummies     bag 
+    420     580     161 </code></pre>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">model_solved</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 48680</code></pre>
+<p>Now, Ali knows to make 420 units of candy (coincidence?), 580 units of gummies, and 161 bags.</p>
+<p>All we have done in either case is to constrain the possible solution set to only include integer values. The “how” of this is substantially more complicated.</p>
+<p>What follows is purely a cursory glance – if you are interested in knowing more, you can check out the resources!</p>
+<ol style="list-style-type: decimal">
+<li><p>The most naive approach is to solve as a linear programming problem (i.e., LP relaxation) and then round the results</p></li>
+<li><p>Some matrices are <em>totally unimodular</em> (no big concern for us) and will always return an integer value.</p></li>
+<li><p>Cutting planes solve the LP relaxation, test if the optimal value is integer. A non-integer solution will get reworked as a constraint and this process continues until an optimal integer solution is found.</p></li>
+<li><p>Branch and bound algorithms produces possible solution sets and transverses subsets of those sets to find an answer.</p></li>
+<li><p>Branch and cut algorithms combine the previous 2 approaches.</p></li>
+</ol>
+</div>
+<div id="transportation-problems" class="section level2" number="4.3">
+<h2>
+<span class="header-section-number">4.3</span> Transportation Problems<a class="anchor" aria-label="anchor" href="#transportation-problems"><i class="fas fa-link"></i></a>
+</h2>
+<p>After sending an updated solution to Bao, Ali felt some sense of relief – learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn’t long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.</p>
+<p>Castel’s problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:</p>
+<p>Castel drew a map for the cost to move product between greenhouses and processing facilities:</p>
+<div id="htmlwidget-0305ad5afb3e3f6affb0" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-0305ad5afb3e3f6affb0">{"x":{"nodes":{"id":[1,2,3,4,5,6,7],"shape":["triangle","triangle","triangle","square","square","square","square"],"label":["greenhouse_1","greenhouse_2","greenhouse_3","processing_1","processing_2","processing_3","processing_4"]},"edges":{"from":[1,1,1,1,2,2,2,2,3,3,3,3],"to":[4,5,6,7,4,5,6,7,4,5,6,7],"label":["35","30","40","32","37","40","42","25","40","15","20","28"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":"to"},"layout":{"improvedLayout":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script><p>And then added the following notes:</p>
+<blockquote>
+<p>Greenhouse 1 can only contribute 1200 pounds</p>
+</blockquote>
+<blockquote>
+<p>Greenhouse 2 can only contribute 1000 pounds</p>
+</blockquote>
+<blockquote>
+<p>Greenhouse 3 can only contribute 800 pounds</p>
+</blockquote>
+<blockquote>
+<p>Processing facility 1 needs at least 1100 pounds</p>
+</blockquote>
+<blockquote>
+<p>Processing facility 2 needs at least 400 pounds</p>
+</blockquote>
+<blockquote>
+<p>Processing facility 3 needs at least 750 pounds</p>
+</blockquote>
+<blockquote>
+<p>Processing facility 4 needs at least 750 pounds</p>
+</blockquote>
+<blockquote>
+<p>How much should each greenhouse send to each processing facility and do it as cheaply as possible?</p>
+</blockquote>
+<p>Ali had all of the necessary information, so took Castel’s words and translated them into an expression:</p>
+<p><span class="math display">\[
+\begin{aligned}
+M = 35_{x_{11}} + 30_{x_{12}} + 40_{x_{13}} + 32_{x_{14}} + 37_{x_{21}} + 40_{x_{22}} + \\
+42_{x_{23}} + 25_{x_{24}} + 40_{x_{31}} + 15_{x_{32}} + 20_{x_{33}} + 28_{x_{34}} \\
+subject \, to \\
+X_{11} + X_{12} + X_{13} + X_{14} \leq 1200 \\
+X_{21} + X_{22} + X_{23} + X_{24} \leq 1000 \\
+X_{31} + X_{32} + X_{33} + X_{34} \leq 800 \\
+X_{11} + X_{21} + X_{31} \geq 1100 \\
+X_{12} + X_{22} + X_{23} \geq 400 \\
+X_{13} + X_{23} + X_{33} \geq 750 \\
+X_{14} + X_{24} + X_{34} \geq 750 \\
+X_{ij} \geq 0
+\end{aligned}
+\]</span></p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">cMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">32</span>, <span class="fl">37</span>, <span class="fl">40</span>,
+     <span class="fl">42</span>, <span class="fl">25</span>, <span class="fl">40</span>, <span class="fl">15</span>, <span class="fl">20</span>, <span class="fl">28</span><span class="op">)</span>
+
+<span class="va">b</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1200</span>, <span class="fl">1000</span>, <span class="fl">800</span>, <span class="fl">1100</span>, <span class="fl">400</span>, <span class="fl">750</span>, <span class="fl">750</span><span class="op">)</span>
+
+<span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, 
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, 
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>,
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span><span class="op">)</span>, 
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span>,
+           <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Remember that the rep function below only serves to replicate whatever</span>
+<span class="co"># you put there. So this:</span>
+<span class="co"># rep("&lt;=", 12)</span>
+<span class="co"># Is the same as:</span>
+<span class="co"># c("&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=", "&lt;=")</span>
+<span class="co"># One is clearly an easier thing to code.</span>
+
+<span class="va">constraints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/L_constraint.html">L_constraint</a></span><span class="op">(</span><span class="va">A</span>, 
+                            <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"&lt;="</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"&gt;="</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span>, 
+                            <span class="va">b</span><span class="op">)</span>
+
+<span class="co"># The length function returns how many items are in the vector.</span>
+
+<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/OP.html">OP</a></span><span class="op">(</span>objective <span class="op">=</span> <span class="va">cMat</span>, 
+            constraints <span class="op">=</span> <span class="va">constraints</span>,
+            types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep.int</a></span><span class="op">(</span><span class="st">"I"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">cMat</span><span class="op">)</span><span class="op">)</span>, 
+            maximum <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+
+<span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">ROI</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/ROI_solve.html">ROI_solve</a></span><span class="op">(</span><span class="va">model</span>, <span class="st">"glpk"</span>, verbose <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<pre><code>&lt;SOLVER MSG&gt;  ----
+GLPK Simplex Optimizer, v4.65
+7 rows, 12 columns, 24 non-zeros
+      0: obj =   0.000000000e+00 inf =   3.000e+03 (4)
+      6: obj =   1.049000000e+05 inf =   0.000e+00 (0)
+*    10: obj =   8.400000000e+04 inf =   0.000e+00 (0)
+OPTIMAL LP SOLUTION FOUND
+GLPK Integer Optimizer, v4.65
+7 rows, 12 columns, 24 non-zeros
+12 integer variables, none of which are binary
+Integer optimization begins...
+Long-step dual simplex will be used
++    10: mip =     not found yet &gt;=              -inf        (1; 0)
++    10: &gt;&gt;&gt;&gt;&gt;   8.400000000e+04 &gt;=   8.400000000e+04   0.0% (1; 0)
++    10: mip =   8.400000000e+04 &gt;=     tree is empty   0.0% (0; 1)
+INTEGER OPTIMAL SOLUTION FOUND
+&lt;!SOLVER MSG&gt; ----</code></pre>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">result</span><span class="op">$</span><span class="va">objval</span></code></pre></div>
+<pre><code>[1] 84000</code></pre>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">transportation_solution</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span>
+
+<span class="co"># Just setting names to make life easier.</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">transportation_solution</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"g1_p1"</span>, <span class="st">"g1_p2"</span>, <span class="st">"g1_p3"</span>, <span class="st">"g1_p4"</span>, 
+                                    <span class="st">"g2_p1"</span>, <span class="st">"g2_p2"</span>, <span class="st">"g2_p3"</span>, <span class="st">"g2_p4"</span>,  
+                                    <span class="st">"g3_p1"</span>, <span class="st">"g3_p2"</span>, <span class="st">"g3_p3"</span>, <span class="st">"g3_p4"</span><span class="op">)</span></code></pre></div>
+<p>“That’s a nice solution!”, Ali remarked and then emailed Castel the results:</p>
+<blockquote>
+<p>Hey Castel,</p>
+</blockquote>
+<blockquote>
+<p>From greenhouse 1, send 850 pounds to processing 1 and 350 pounds to processing 2.</p>
+</blockquote>
+<blockquote>
+<p>From greenhouse 2, send 250 pounds to processing 1 and 750 pounds to processing 4.</p>
+</blockquote>
+<blockquote>
+<p>From greenhouse 3, send 50 pounds to processing 50 and 750 to processing 3.</p>
+</blockquote>
+<blockquote>
+<p>All those moves will cost 84000 dollars.</p>
+</blockquote>
+<blockquote>
+<p>Let me know if I can help you with anything else,</p>
+</blockquote>
+<blockquote>
+<p>Ali</p>
+</blockquote>
+</div>
+<div id="binary-integer-programming" class="section level2" number="4.4">
+<h2>
+<span class="header-section-number">4.4</span> Binary Integer Programming<a class="anchor" aria-label="anchor" href="#binary-integer-programming"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <em>transportation problem</em> proved to be an easy one, once it was broken down into it’s mathematical expression. Blaise’s request, though, proved to be a bit more challenging.</p>
+<blockquote>
+<p>How’s life, my unmet friend?</p>
+</blockquote>
+<blockquote>
+<p>We’ve got a situation in our <em>connoisseur’s cabinet</em> – it is where we keep the expensive stuff.</p>
+</blockquote>
+<blockquote>
+<p>We only have room for a single feature cabinet, so we can’t put everything that we have into it.</p>
+</blockquote>
+<blockquote>
+<p>I’d like to put things in there that won’t take up a ton of space, but will also bring in the cash.</p>
+</blockquote>
+<blockquote>
+<p>The list of products, prices, and space is attached. I can’t use any more than 10 spaces.</p>
+</blockquote>
+<blockquote>
+<p>Any ideas?</p>
+</blockquote>
+<blockquote>
+<p>Blaise</p>
+</blockquote>
+<p>Turns out, that Blaise was just asking for some version of a <em>knapsack</em> problem:</p>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># Nothing tricky below -- all we are doing is creating a data frame.</span>
+<span class="co"># The data frame contains 3 columns: item, space, and value.</span>
+
+<span class="va">special_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>item <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cannabis_caviar"</span>, <span class="st">"oracle"</span>, <span class="st">"fruity_pebbles"</span>, 
+                                     <span class="st">"loud_dream"</span>, <span class="st">"white_fire"</span>, <span class="st">"j1"</span>, 
+                                     <span class="st">"hammerhead"</span>, <span class="st">"sista"</span>, <span class="st">"goblin"</span>, 
+                                     <span class="st">"fishermen"</span>, <span class="st">"cloud"</span>, <span class="st">"paradise"</span><span class="op">)</span>, 
+                            space <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1</span>, <span class="fl">1</span>, 
+                                      <span class="fl">1.25</span>, <span class="fl">1</span>, <span class="fl">1</span>, 
+                                      <span class="fl">6</span>, <span class="fl">5</span>, <span class="fl">6</span>, 
+                                      <span class="fl">7</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>, 
+                            value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">800</span>, <span class="fl">450</span>, <span class="fl">400</span>, 
+                                      <span class="fl">400</span>, <span class="fl">500</span>, <span class="fl">350</span>, 
+                                      <span class="fl">1600</span>, <span class="fl">2325</span>, <span class="fl">1005</span>, 
+                                      <span class="fl">750</span>, <span class="fl">250</span>, <span class="fl">875</span><span class="op">)</span><span class="op">)</span>
+
+<span class="co"># Below is just a little bit different from what we have seen:</span>
+<span class="co"># instead of specifying a whole vector on the RHS, we just</span>
+<span class="co"># have a single number. We are really only rocking with </span>
+<span class="co"># a single constraint.</span>
+
+<span class="va">constraints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/L_constraint.html">L_constraint</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">space</span>, <span class="st">"&lt;="</span>, <span class="fl">10</span><span class="op">)</span> 
+
+<span class="co"># Going to set those variables to be integers.</span>
+
+<span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/OP.html">OP</a></span><span class="op">(</span>objective <span class="op">=</span> <span class="va">special_items</span><span class="op">$</span><span class="va">value</span>, 
+            constraints <span class="op">=</span> <span class="va">constraints</span>,
+            types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep.int</a></span><span class="op">(</span><span class="st">"I"</span>, <span class="fl">12</span><span class="op">)</span>, 
+            maximum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="va">solved_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/ROI_solve.html">ROI_solve</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>
+
+<span class="co"># The line below looks weird, but we are literally saying</span>
+<span class="co"># to take our solution and then set the names of that </span>
+<span class="co"># data frame to the item names from our special_items </span>
+<span class="co"># data frame. The |&gt; is R's native pipe operator. </span>
+<span class="co"># The only reason we are doing this is to make the solution</span>
+<span class="co"># easier to see (i.e., which itmes should we select).</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
+  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
+<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
+              6               0               0               0 
+     white_fire              j1      hammerhead           sista 
+              1               0               0               0 
+         goblin       fishermen           cloud        paradise 
+              0               0               0               0 </code></pre>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 5300</code></pre>
+<p>Ali wondered, “What would happen if I changed that constraint to only be a 0 or a 1?”</p>
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/OP.html">OP</a></span><span class="op">(</span>objective <span class="op">=</span> <span class="va">special_items</span><span class="op">$</span><span class="va">value</span>, 
+            constraints <span class="op">=</span> <span class="va">constraints</span>,
+            types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep.int</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">12</span><span class="op">)</span>, 
+            maximum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+
+<span class="va">solved_model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/ROI_solve.html">ROI_solve</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
+  <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
+<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
+              0               1               1               0 
+     white_fire              j1      hammerhead           sista 
+              1               0               0               1 
+         goblin       fishermen           cloud        paradise 
+              0               0               0               1 </code></pre>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 4550</code></pre>
+<p>What should Ali do?</p>
+
+</div>
 </div>
   <div class="chapter-nav">
 <div class="prev"><a href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></div>
 <div class="next"><a href="simulation.html"><span class="header-section-number">5</span> Simulation</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#integer-programming"><span class="header-section-number">4</span> Integer Programming</a></li></ul>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#integer-programming"><span class="header-section-number">4</span> Integer Programming</a></li>
+<li><a class="nav-link" href="#troubling-solutions"><span class="header-section-number">4.1</span> Troubling Solutions</a></li>
+<li><a class="nav-link" href="#classoverflow-1"><span class="header-section-number">4.2</span> ClassOverflow</a></li>
+<li><a class="nav-link" href="#transportation-problems"><span class="header-section-number">4.3</span> Transportation Problems</a></li>
+<li><a class="nav-link" href="#binary-integer-programming"><span class="header-section-number">4.4</span> Binary Integer Programming</a></li>
+</ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
@@ -120,7 +525,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-08-26.</p>
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

@@ -1,0 +1,286 @@
+---
+always_allow_html: true
+---
+# Integer Programming
+
+## Troubling Solutions
+
+Ali had figured out the whole linear programming thing and all felt good -- until a troubling solution came back.
+
+As per usual, trouble began with an email:
+
+> What's good Ali? I'm Bao, from our retail operations group! We heard that you are a wizard with this stuff, so we are hoping that you can help us out.
+
+> We have an issue in many of our stores: we often find that we are overstocked on certain edibles, but we can't keep others on the shelf. We'd love to balance that out, but aren't really sure if saying, "Just change production", is the answer. No matter what we make for batches, we would obviously like to do it for as cheap as possible.
+
+> Here is the basics of what we have to deal with:
+
+> 1. We have two primary classes of edibles: gummies and candy bars.
+
+> 2. We aren't really worried about ingredients other than what is grown in our greenhouses. Food supplies are easy, but green supplies aren't.
+
+> 3. To make a batch of candy, it requires 4 grams of raw flower, 1 gram of distillates, and 1 gram of pressed trichromes.
+
+> 4. To make a batch of gummies, it requires 3 grams of raw flower and 1 gram of distillates.
+
+> 5. Every month, we start with 200 grams of raw flower, 500 grams of distallate, and 100 grams of pressed trichromes.
+
+> 6. If a store needs more, they can purchase a standard bag of raw flower for 80 dollars per bag.
+
+> 7. A bag of raw flower can produce 10 grams of distallate, 20 grams of raw flower, and 2 grams of pressed trichromes
+
+> 8. Producing candy costs 30 dollars per batch; producing gummies costs 40 dollars a batch
+
+> 9. We need at least 1000 selling units per month.
+
+> We owe you one!
+
+> Bao
+
+"Oh yeah", though Ali, "this is going to be a walk in the park."
+
+```{r}
+library(linprog)
+
+cvec <- c(candy = 30,
+          gummies = 40,
+          bag = 80)
+
+bvec <- c(distillate = 500,
+          flower = 200,
+          trichromes = 100,
+          batch_need = 1000)
+
+constDirs <- c("<=", "<=", "<=", ">=")
+
+aMat <- rbind(dis_const = c(1, 1, -10),
+              flow_const = c(4, 3, -20),
+              trich_const = c(1, 0, -2),
+              batch_const = c(1, 1, 0))
+
+solveLP(cvec, bvec, aMat, maximum = FALSE,
+        const.dir = constDirs)
+```
+
+That is great! Make 422.222 batches of candy, 577.778 batches of gummies, and buy 161.111 bags...
+
+The first thing Ali though was, "What in the actual...those numbers cannot be correct. How do you make .222 of something? Is that acceptable? On second thought, could you ever buy a tenth of a bag?" 
+
+Just to be sure, Ali checked every value and everything matched just fine. So what could be causing the problem and how can it be fixed?
+
+Looks like another visit to Jun...who just so happens to be on vacation.
+
+## ClassOverflow
+
+Let's spend some time exploring some package functionality:
+
+```{r}
+library(lpSolve)
+
+test <- lpSolve::lp(direction = "min", objective.in = cvec,
+            const.mat = aMat, const.dir = constDirs,
+            const.rhs = bvec, all.int = TRUE, compute.sens = 1)
+```
+
+Remember ROI from last time? It has some pretty handy functionality. 
+
+```{r}
+library(ROI)
+library(ROI.plugin.glpk)
+```
+
+We can use all of the objects that we have already created
+
+```{r}
+model_constraints <- L_constraint(L = aMat, 
+                                  dir = constDirs, 
+                                  rhs = bvec)
+
+model_creation <- OP(objective = cvec, 
+                     constraints = model_constraints, 
+                     types = rep("I", length(cvec)), 
+                     maximum = FALSE)
+
+model_solved <- ROI_solve(model_creation)
+
+solution(model_solved, "primal")
+solution(model_solved, "objval")
+```
+
+Now, Ali knows to make 420 units of candy (coincidence?), 580 units of gummies, and 161 bags.
+
+All we have done in either case is to constrain the possible solution set to only include integer values. The "how" of this is substantially more complicated. 
+
+What follows is purely a cursory glance -- if you are interested in knowing more, you can check out the resources!
+
+1. The most naive approach is to solve as a linear programming problem (i.e., LP relaxation) and then round the results
+
+2. Some matrices are *totally unimodular* (no big concern for us) and will always return an integer value.
+
+3. Cutting planes solve the LP relaxation, test if the optimal value is integer. A non-integer solution will get reworked as a constraint and this process continues until an optimal integer solution is found.
+
+4. Branch and bound algorithms produces possible solution sets and transverses subsets of those sets to find an answer.
+
+5. Branch and cut algorithms combine the previous 2 approaches.
+
+## Transportation Problems
+
+After sending an updated solution to Bao, Ali felt some sense of relief -- learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn't long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.
+
+Castel's problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:
+
+Castel drew a map for the cost to move product between greenhouses and processing facilities:
+
+```{r, echo = FALSE}
+library(visNetwork)
+
+ndf <- data.frame(id = 1:7,
+    shape = c("triangle", "triangle", "triangle", 
+              "square", "square", "square", "square"),
+    label = c("greenhouse_1", "greenhouse_2", "greenhouse_3", 
+             "processing_1", "processing_2",
+             "processing_3", "processing_4"))
+
+edf <- data.frame(from = c(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3),
+                     to = c(4, 5, 6, 7, 4, 5, 6, 7, 4, 5, 6, 7),
+                     label = c("35", "30", "40", "32", "37", "40",
+                             "42", "25", "40", "15", "20", "28"))
+
+visNetwork(ndf, edf) %>% 
+  visEdges(arrows = "to") %>% 
+  visLayout(improvedLayout = TRUE)
+
+```
+
+And then added the following notes:
+
+> Greenhouse 1 can only contribute 1200 pounds
+
+> Greenhouse 2 can only contribute 1000 pounds
+
+> Greenhouse 3 can only contribute 800 pounds
+
+> Processing facility 1 needs at least 1100 pounds
+
+> Processing facility 2 needs at least 400 pounds
+
+> Processing facility 3 needs at least 750 pounds
+
+> Processing facility 4 needs at least 750 pounds
+
+> How much should each greenhouse send to each processing facility and do it as cheaply as possible?
+
+Ali had all of the necessary information, so took Castel's words and translated them into an expression:
+
+$$
+\begin{aligned}
+M = 35_{x_{11}} + 30_{x_{12}} + 40_{x_{13}} + 32_{x_{14}} + 37_{x_{21}} + 40_{x_{22}} + \\
+42_{x_{23}} + 25_{x_{24}} + 40_{x_{31}} + 15_{x_{32}} + 20_{x_{33}} + 28_{x_{34}} \\
+subject \, to \\
+X_{11} + X_{12} + X_{13} + X_{14} \leq 1200 \\
+X_{21} + X_{22} + X_{23} + X_{24} \leq 1000 \\
+X_{31} + X_{32} + X_{33} + X_{34} \leq 800 \\
+X_{11} + X_{21} + X_{31} \geq 1100 \\
+X_{12} + X_{22} + X_{23} \geq 400 \\
+X_{13} + X_{23} + X_{33} \geq 750 \\
+X_{14} + X_{24} + X_{34} \geq 750 \\
+X_{ij} \geq 0
+\end{aligned}
+$$
+
+```{r}
+cMat <- c(35, 30, 40, 32, 37, 40,
+     42, 25, 40, 15, 20, 28)
+
+b <- c(1200, 1000, 800, 1100, 400, 750, 750)
+
+A <- rbind(c(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0), 
+           c(0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0),
+           c(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1), 
+           c(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0),
+           c(0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0), 
+           c(0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0),
+           c(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1))
+
+constraints <- L_constraint(A, 
+                            c(rep("<=", 3), rep(">=", 4)), 
+                            b)
+
+model <- OP(objective = cMat, 
+            constraints = constraints,
+            types = rep.int("I", length(cMat)), 
+            maximum = FALSE)
+
+result <- ROI::ROI_solve(model, "glpk", verbose = TRUE)
+
+result$objval
+
+solution(result)
+```
+
+## Binary Integer Programming
+
+The *transportation problem* proved to be an easy one, once it was broken down into it's mathematical expression. Blaise's request, though, proved to be a bit more challenging.
+
+> How's life, my unmet friend?
+
+> We've got a situation in our *connoisseur's cabinet* -- it is where we keep the expensive stuff.
+
+> We only have room for a single feature cabinet, so we can't put everything that we have into it.
+
+> I'd like to put things in there that won't take up a ton of space, but will also bring in the cash.
+
+> The list of products, prices, and space is attached. I can't use any more than 10 spaces.
+
+> Any ideas?
+
+> Blaise
+
+Turns out, that Blaise was just asking for some version of a *knapsack* problem:
+
+```{r}
+special_items <- data.frame(item = c("cannabis_caviar", "oracle", "fruity_pebbles", 
+                                     "loud_dream", "white_fire", "j1", 
+                                     "hammerhead", "sista", "goblin", 
+                                     "fishermen", "cloud", "paradise"), 
+                            space = c(1.5, 1, 1, 
+                                      1.25, 1, 1, 
+                                      6, 5, 6, 
+                                      7, 3, 2), 
+                            value = c(800, 450, 400, 
+                                      400, 500, 350, 
+                                      1600, 2325, 1005, 
+                                      750, 250, 875))
+
+constraints <- L_constraint(special_items$space, "<=", 10) 
+
+model <- OP(objective = special_items$value, 
+            constraints = constraints,
+            types = rep.int("I", 12), 
+            maximum = TRUE)
+
+solved_model <- ROI_solve(model)
+
+solution(solved_model) |> 
+  setNames(special_items$item)
+
+solution(solved_model, "objval")
+```
+
+Ali wondered, "What would happen if I changed that constraint to only be a 0 or a 1?"
+
+```{r}
+model <- OP(objective = special_items$value, 
+            constraints = constraints,
+            types = rep.int("B", 12), 
+            maximum = TRUE)
+
+solved_model <- ROI_solve(model)
+
+solution(solved_model) |> 
+  setNames(special_items$item)
+
+solution(solved_model, "objval")
+```
+
+What should Ali do?

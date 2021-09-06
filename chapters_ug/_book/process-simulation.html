@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>4 Process Simulation | Simulation and Optimization</title>
+<meta name="author" content="Seth Berry">
+<!-- JS --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.2"></script><script src="https://kit.fontawesome.com/6ecbd6c532.js" crossorigin="anonymous"></script><script src="libs/header-attrs-2.8/header-attrs.js"></script><script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="libs/bootstrap-4.6.0/bootstrap.min.css" rel="stylesheet">
+<script src="libs/bootstrap-4.6.0/bootstrap.bundle.min.js"></script><script src="libs/bs3compat-0.2.5.1/tabs.js"></script><script src="libs/bs3compat-0.2.5.1/bs3compat.js"></script><link href="libs/bs4_book-1.0.0/bs4_book.css" rel="stylesheet">
+<script src="libs/bs4_book-1.0.0/bs4_book.js"></script><script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script><script src="libs/viz-1.8.2/viz.js"></script><link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet">
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script><link href="libs/vis-4.20.1/vis.css" rel="stylesheet">
+<script src="libs/vis-4.20.1/vis.min.js"></script><script src="libs/visNetwork-binding-2.0.9/visNetwork.js"></script><script src="https://cdn.jsdelivr.net/autocomplete.js/0/autocomplete.jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/mark.js@8.11.1/dist/mark.min.js"></script><!-- CSS -->
+</head>
+<body data-spy="scroll" data-target="#toc">
+
+<div class="container-fluid">
+<div class="row">
+  <header class="col-sm-12 col-lg-3 sidebar sidebar-book"><a class="sr-only sr-only-focusable" href="#content">Skip to main content</a>
+
+    <div class="d-flex align-items-start justify-content-between">
+      <h1>
+        <a href="index.html" title="">Simulation and Optimization</a>
+      </h1>
+      <button class="btn btn-outline-primary d-lg-none ml-2 mt-1" type="button" data-toggle="collapse" data-target="#main-nav" aria-expanded="true" aria-controls="main-nav"><i class="fas fa-bars"></i><span class="sr-only">Show table of contents</span></button>
+    </div>
+
+    <div id="main-nav" class="collapse-lg">
+      <form role="search">
+        <input id="search" class="form-control" type="search" placeholder="Search" aria-label="Search">
+</form>
+
+      <nav aria-label="Table of contents"><h2>Table of contents</h2>
+        <ul class="book-toc list-unstyled">
+<li><a class="" href="index.html"><span class="header-section-number">1</span> Preface</a></li>
+<li><a class="" href="introduction.html"><span class="header-section-number">2</span> Introduction</a></li>
+<li><a class="" href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></li>
+<li><a class="active" href="process-simulation.html"><span class="header-section-number">4</span> Process Simulation</a></li>
+<li><a class="" href="integer-programming.html"><span class="header-section-number">5</span> Integer Programming</a></li>
+<li><a class="" href="simulation.html"><span class="header-section-number">6</span> Simulation</a></li>
+</ul>
+
+        <div class="book-extra">
+          
+        </div>
+      </nav>
+</div>
+  </header><main class="col-sm-12 col-md-9 col-lg-7" id="content"><div id="process-simulation" class="section level1" number="4">
+<h1>
+<span class="header-section-number">4</span> Process Simulation<a class="anchor" aria-label="anchor" href="#process-simulation"><i class="fas fa-link"></i></a>
+</h1>
+<p>Ali was absolutely smoked (no pun intended) after handling all of that optimization – hopefully some more standard modeling would come through. High hopes are always short lived, though, and Ali was thrown right back into the dark arts of Operations-based research.</p>
+<p>During an “all-hands” meeting, Ali had the chance to listen to Rene, the Director of Retail Analytics, talk about store efficiency. Rene explained the process that typically happens.</p>
+<p>“Our average store front is pretty small and we need to be careful about how many people are inside at any one time”, Rene started. “We can’t have more than 8 people waiting in the lobby before their ID’s are checked”, and Rene continued, “we don’t want to turn people away, so we need to get more efficient in ID checks and bud-tending”.</p>
+<p>Ali was feeling good after some success and wasn’t afraid to ask some questions – “Can you explain the process to me?”, Ali asked.</p>
+<p>“Sure”, Rene said. “It is pretty easy, people walk in the door and wait for their ID to be checked.”</p>
+<p>“Once their ID has been checked they can meet with one of our bud-tenders – they pick their poison and then pay.”</p>
+<p>Ali was drawing the process out and made sure that it was correct:</p>
+<p>“Seem about right?”, Ali asked.</p>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rich-iannone/DiagrammeR">DiagrammeR</a></span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/pkg/DiagrammeR/man/grViz.html">grViz</a></span><span class="op">(</span><span class="st">"
+digraph {
+  graph [overlap = true, fontsize = 10, rankdir = LR]
+  
+  node [shape = box, style = filled, color = black, fillcolor = aliceblue]
+  A [label = 'ID Check Line']
+  B [label = 'ID Check']
+  C [label = 'Bud Tender Line']
+  D [label = 'Bud Tender']
+  E [label = 'Pay']
+
+  A-&gt;B B-&gt;C C-&gt;D D-&gt;E
+}
+"</span><span class="op">)</span></code></pre></div>
+<div id="htmlwidget-e64092e51f8b8010bc85" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e64092e51f8b8010bc85">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  A [label = \"ID Check Line\"]\n  B [label = \"ID Check\"]\n  C [label = \"Bud Tender Line\"]\n  D [label = \"Bud Tender\"]\n  E [label = \"Pay\"]\n\n  A->B B->C C->D D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>“That’s right”, Rene said.</p>
+<p>“How many people are checking IDs and how many bud tenders do you have?”, Ali asked.</p>
+<p>“It kinda depends”, Rene said, “but it is usually just one person checking IDs and usually two bud tenders.”</p>
+<p>Ali had one more question: “How long do each of those steps take?”</p>
+<p>“Uhhhhh…I’ll have to ask around and get back with you”, Rene noted.</p>
+<p>“Most excellent”, Ali thought, “that will give me some time to chat with Alex.” Alex was the resident expert of simulations of all kind, so Ali knew an ally was there.</p>
+<div id="discrete-event-simulation" class="section level2" number="4.1">
+<h2>
+<span class="header-section-number">4.1</span> Discrete Event Simulation<a class="anchor" aria-label="anchor" href="#discrete-event-simulation"><i class="fas fa-link"></i></a>
+</h2>
+<p>When Ali finally caught up with Alex, Alex was only too happy to share some of the finer points on process simulation.</p>
+</div>
+<div id="queueing-theory" class="section level2" number="4.2">
+<h2>
+<span class="header-section-number">4.2</span> Queueing Theory<a class="anchor" aria-label="anchor" href="#queueing-theory"><i class="fas fa-link"></i></a>
+</h2>
+<p>Queues have their own notation (Kendall’s notation).</p>
+<p><span class="math inline">\(A/B/C/D\)</span></p>
+<p>Where:</p>
+<p><span class="math inline">\(A = arrival\, process\)</span></p>
+<p><span class="math inline">\(B = service\, process\)</span></p>
+<p><span class="math inline">\(C = server\, number\)</span></p>
+<p><span class="math inline">\(D = que\, capacity\)</span></p>
+<p><span class="math inline">\(M/D/k\)</span></p>
+<p><span class="math inline">\(M/M/k\)</span></p>
+<p><em>M</em> generally stands for Markov or Exponential</p>
+<aside>
+You might also see <em>M</em> described as being from a Poisson process
+</aside><p><em>D</em> is deterministic: all jobs require a fixed amount of time.</p>
+<p><em>k</em> is the number of servers/workers/etc.</p>
+<p>Both of these are generally assumed to have an infinite buffer.</p>
+<p>If a queue is <span class="math inline">\(M/D/k\)</span>, we can easily compute some helpful statistics (we don’t need any fancy software to help us).</p>
+<p><span class="math inline">\(\lambda\)</span> = arrival rate</p>
+<p><span class="math inline">\(\mu\)</span> = service rate</p>
+<p><span class="math inline">\(\rho = \frac{\lambda}{\mu}\)</span> = utilization</p>
+<p>Average number of entities in the system is:</p>
+<p><span class="math display">\[ L = \rho + \frac{1}{2}\Bigg(\frac{\rho^2}{1 - \rho}\Bigg) \]</span></p>
+<p>Average number in queue:</p>
+<p><span class="math display">\[ L_Q = \frac{1}{2}\Bigg(\frac{\rho^2}{1 - \rho}\Bigg) \]</span></p>
+<p>Average system waiting time:</p>
+<p><span class="math display">\[ \omega = \frac{1}{\mu}+\frac{\rho}{2\mu(1 - \rho)} \]</span></p>
+<p>Average waiting time in queue:</p>
+<p><span class="math display">\[ \omega_Q = \frac{\rho}{2\mu(1 - \rho)} \]</span></p>
+</div>
+<div id="distributions" class="section level2" number="4.3">
+<h2>
+<span class="header-section-number">4.3</span> Distributions<a class="anchor" aria-label="anchor" href="#distributions"><i class="fas fa-link"></i></a>
+</h2>
+<div id="normal-distribution" class="section level3" number="4.3.1">
+<h3>
+<span class="header-section-number">4.3.1</span> Normal Distribution<a class="anchor" aria-label="anchor" href="#normal-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>For our normal distribution, we know the <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-18-1.png" width="672"></div>
+<p>Want to test if a variable is normally distributed?</p>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">normal_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5000</span>, mean <span class="op">=</span> <span class="fl">2.5</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>
+
+<span class="va">exponential_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">2.5</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-19-1.png" width="672"></div>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-19-2.png" width="672"></div>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  normal_variable
+W = 0.99938, p-value = 0.08861</code></pre>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  exponential_variable
+W = 0.81569, p-value &lt; 2.2e-16</code></pre>
+</div>
+<div id="exponential-distribution" class="section level3" number="4.3.2">
+<h3>
+<span class="header-section-number">4.3.2</span> Exponential Distribution<a class="anchor" aria-label="anchor" href="#exponential-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>We can only know one thing about the exponential distribution: <span class="math inline">\(\mu\)</span> (also expressed as a rate).</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-20-1.png" width="672"></div>
+<p>Wanna test it?</p>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-21-1.png" width="672"></div>
+</div>
+<div id="poisson-distribution" class="section level3" number="4.3.3">
+<h3>
+<span class="header-section-number">4.3.3</span> Poisson Distribution<a class="anchor" aria-label="anchor" href="#poisson-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>The poisson is an interesting distribution – it tends to deal with count-related variables. It tells us the probability of a count occuring. We know its <span class="math inline">\(\lambda\)</span> (again, a rate).</p>
+<aside><p><span class="math inline">\(\lambda\)</span> is just a fancy way of saying the average number of events, or the incidence rate.</p>
+</aside><div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-22-1.png" width="672"></div>
+</div>
+<div id="uniform-distribution" class="section level3" number="4.3.4">
+<h3>
+<span class="header-section-number">4.3.4</span> Uniform Distribution<a class="anchor" aria-label="anchor" href="#uniform-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not – I would say that distinction belongs to the uniform distribution. We don’t even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range.</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-23-1.png" width="672"></div>
+</div>
+</div>
+<div id="performance" class="section level2" number="4.4">
+<h2>
+<span class="header-section-number">4.4</span> Performance<a class="anchor" aria-label="anchor" href="#performance"><i class="fas fa-link"></i></a>
+</h2>
+<p>The <em>service level</em> for each simulation is the fraction of the demand that is satisfied.</p>
+<p><span class="math display">\[ Entrance  \: Service \: Level = \frac{Objects \: Entering}{Objects \: Entering + Objects \: Unable \: To \: Enter}\]</span></p>
+<p>Here, we are looking at the number of people who wanted to join the process, but could not. If we have a service level of 1, then 100% of objects were able to get into the process. A service level of .5 would indicate that only 50% of objects were able to enter.</p>
+<p>The <em>overall mean service level</em> of the process is the mean of the service levels calculated from each simulation.</p>
+<p>The <em>mean cycle time</em> at a buffer is the mean amount of time an object takes to move through the buffer during a simulation.</p>
+<p>The <em>overall mean cycle time</em> at a buffer is the mean of the mean cycle time of the buffer for each simulation.</p>
+<aside>
+You will see different words for lines: buffers and queues. Just know that they are used interchangeably.
+</aside>
+</div>
+<div id="the-dispensary" class="section level2" number="4.5">
+<h2>
+<span class="header-section-number">4.5</span> The Dispensary<a class="anchor" aria-label="anchor" href="#the-dispensary"><i class="fas fa-link"></i></a>
+</h2>
+<p>The interarrival times for customers follows an exponential distribution with <span class="math inline">\(\mu = 2 \, minutes\)</span>.</p>
+<p>The dispensary cannot hold any more than 8 people, for safety reasons. If a person arrives when the line is full, that person will not get in line.</p>
+<p>The bud tender’s service time can be approximated by a normal distribution with <span class="math inline">\(\mu = 2.4 \, minutes\)</span> and <span class="math inline">\(\sigma = .5 \, minutes\)</span>.</p>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rich-iannone/DiagrammeR">DiagrammeR</a></span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/pkg/DiagrammeR/man/grViz.html">grViz</a></span><span class="op">(</span><span class="st">"
+digraph {
+  graph [overlap = true, fontsize = 10, rankdir = LR]
+  
+  node [shape = box, style = filled, color = black, fillcolor = aliceblue]
+  
+  A [label = 'Door']
+  B [label = 'Line']
+  C [label = 'Teller 1']
+  D [label = 'Teller 2']
+  E [label = 'Served']
+  
+  A-&gt;B 
+  B-&gt;C
+  B-&gt;D
+  C-&gt;E
+  D-&gt;E
+}
+"</span><span class="op">)</span></code></pre></div>
+<div id="htmlwidget-fb4a63b2fdce4d5938c2" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fb4a63b2fdce4d5938c2">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  \n  A [label = \"Door\"]\n  B [label = \"Line\"]\n  C [label = \"Teller 1\"]\n  D [label = \"Teller 2\"]\n  E [label = \"Served\"]\n  \n  A->B \n  B->C\n  B->D\n  C->E\n  D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+  <div class="chapter-nav">
+<div class="prev"><a href="linear-optimization.html"><span class="header-section-number">3</span> Linear Optimization</a></div>
+<div class="next"><a href="integer-programming.html"><span class="header-section-number">5</span> Integer Programming</a></div>
+</div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
+    <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#process-simulation"><span class="header-section-number">4</span> Process Simulation</a></li>
+<li><a class="nav-link" href="#discrete-event-simulation"><span class="header-section-number">4.1</span> Discrete Event Simulation</a></li>
+<li><a class="nav-link" href="#queueing-theory"><span class="header-section-number">4.2</span> Queueing Theory</a></li>
+<li>
+<a class="nav-link" href="#distributions"><span class="header-section-number">4.3</span> Distributions</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#normal-distribution"><span class="header-section-number">4.3.1</span> Normal Distribution</a></li>
+<li><a class="nav-link" href="#exponential-distribution"><span class="header-section-number">4.3.2</span> Exponential Distribution</a></li>
+<li><a class="nav-link" href="#poisson-distribution"><span class="header-section-number">4.3.3</span> Poisson Distribution</a></li>
+<li><a class="nav-link" href="#uniform-distribution"><span class="header-section-number">4.3.4</span> Uniform Distribution</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#performance"><span class="header-section-number">4.4</span> Performance</a></li>
+<li><a class="nav-link" href="#the-dispensary"><span class="header-section-number">4.5</span> The Dispensary</a></li>
+</ul>
+
+      <div class="book-extra">
+        <ul class="list-unstyled">
+          
+        </ul>
+</div>
+    </nav>
+</div>
+
+</div>
+</div> <!-- .container -->
+
+<footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+  </div>
+
+  <div class="col-12 col-md-6 mt-3">
+    <p>This book was built by the <a class="text-light" href="https://bookdown.org">bookdown</a> R package.</p>
+  </div>
+
+</div></div>
+</footer><!-- dynamically load mathjax for compatibility with self-contained --><script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+</html>

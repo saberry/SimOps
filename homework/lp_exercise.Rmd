@@ -1,0 +1,81 @@
+---
+title: "LP Exercies"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+## Working Together
+
+```{r}
+library(linprog)
+
+advert <- read.csv("https://raw.githubusercontent.com/saberry/SimOps/main/advertising_data.csv", 
+                   row.names = 1)
+
+dropDemos <- which(names(advert) == "demographic_total")
+
+objectiveFunction <- as.matrix(advert["cost", -c(dropDemos)])
+
+dropCost <- which(rownames(advert) == "cost")
+
+constraintMargins <- as.matrix(advert[-c(dropCost), "demographic_total"])
+
+constraintMatrix <- as.matrix(advert[-c(dropCost), -c(dropDemos)])
+
+res <- solveLP(objectiveFunction, constraintMargins, constraintMatrix, 
+              maximum = FALSE, const.dir = rep(">=", length(constraintMargins)))
+
+res$opt
+
+res$solution
+
+res$con
+```
+
+### Keeping Track Of Variables
+
+### Lower and Upper Bounds
+
+
+## Solve this problem
+
+$$
+\begin{aligned}
+\text{Maximize:}\\
+\text{revenue} = 40_{oil} + 7.5_{flower} \\
+\text{Subject to:} \\
+\text{needs} = 30_{oil} + 3_{flower} \leq 8960 \\
+\text{oil}, \text{flower} \geq 0
+\end{aligned}
+$$
+
+```{r}
+library(linprog)
+
+objectiveFunction 
+
+constraintValues
+
+constraintMatrix
+
+linprog::solveLP()
+```
+
+### Adding Upper and Lower Bounds
+
+Produce at least 50 grams of oil and make note of what happens.
+
+```{r}
+
+```
+
+Keep your lower bound for oil, and also specify an upper bound to keep flower less than or equal to 2000. How does your solution change?
+
+```{r}
+
+```
+

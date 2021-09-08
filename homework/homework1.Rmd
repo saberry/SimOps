@@ -26,6 +26,7 @@ m3 \leq 300 \\
 m4 \leq 300
 $$
 
+
 What is the total cost for this problem? Provide a very brief explanation of the first 4 constraints.
 
 ### Question 2: Convenience Store Diet

@@ -117,7 +117,7 @@
 <p>Bao</p>
 </blockquote>
 <p>“Oh yeah”, though Ali, “this is going to be a walk in the park.”</p>
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://linprog.r-forge.r-project.org/">linprog</a></span><span class="op">)</span>
 
 <span class="va">cvec</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>candy <span class="op">=</span> <span class="fl">30</span>,
@@ -180,23 +180,23 @@ S batch_need    0.000    0  -50.00000   Inf 50.00000      Inf</code></pre>
 <p>Just to be sure, Ali checked every value and everything matched just fine. So what could be causing the problem and how can it be fixed?</p>
 <p>Looks like another visit to Jun…who just so happens to be on vacation.</p>
 </div>
-<div id="classoverflow-1" class="section level2" number="5.2">
+<div id="classoverflow-2" class="section level2" number="5.2">
 <h2>
-<span class="header-section-number">5.2</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow-1"><i class="fas fa-link"></i></a>
+<span class="header-section-number">5.2</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow-2"><i class="fas fa-link"></i></a>
 </h2>
 <p>Let’s spend some time exploring some package functionality:</p>
-<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/gaborcsardi/lpSolve">lpSolve</a></span><span class="op">)</span>
 
 <span class="va">test</span> <span class="op">&lt;-</span> <span class="fu">lpSolve</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/lpSolve/man/lp.html">lp</a></span><span class="op">(</span>direction <span class="op">=</span> <span class="st">"min"</span>, objective.in <span class="op">=</span> <span class="va">cvec</span>,
             const.mat <span class="op">=</span> <span class="va">aMat</span>, const.dir <span class="op">=</span> <span class="va">constDirs</span>,
             const.rhs <span class="op">=</span> <span class="va">bvec</span>, all.int <span class="op">=</span> <span class="cn">TRUE</span>, compute.sens <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
 <p>Remember ROI from last time? It has some pretty handy functionality.</p>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://roi.r-forge.r-project.org/">ROI</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://roi.r-forge.r-project.org/">ROI.plugin.glpk</a></span><span class="op">)</span></code></pre></div>
 <p>We can use all of the objects that we have already created</p>
-<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model_constraints</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/L_constraint.html">L_constraint</a></span><span class="op">(</span>L <span class="op">=</span> <span class="va">aMat</span>, 
                                   dir <span class="op">=</span> <span class="va">constDirs</span>, 
                                   rhs <span class="op">=</span> <span class="va">bvec</span><span class="op">)</span>
@@ -211,7 +211,7 @@ S batch_need    0.000    0  -50.00000   Inf 50.00000      Inf</code></pre>
 <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">model_solved</span>, <span class="st">"primal"</span><span class="op">)</span></code></pre></div>
 <pre><code>  candy gummies     bag 
     420     580     161 </code></pre>
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">model_solved</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
 <pre><code>[1] 48680</code></pre>
 <p>Now, Ali knows to make 420 units of candy (coincidence?), 580 units of gummies, and 161 bags.</p>
@@ -232,8 +232,8 @@ S batch_need    0.000    0  -50.00000   Inf 50.00000      Inf</code></pre>
 <p>After sending an updated solution to Bao, Ali felt some sense of relief – learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn’t long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.</p>
 <p>Castel’s problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:</p>
 <p>Castel drew a map for the cost to move product between greenhouses and processing facilities:</p>
-<div id="htmlwidget-bb63c754cd6b8719d104" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-bb63c754cd6b8719d104">{"x":{"nodes":{"id":[1,2,3,4,5,6,7],"shape":["triangle","triangle","triangle","square","square","square","square"],"label":["greenhouse_1","greenhouse_2","greenhouse_3","processing_1","processing_2","processing_3","processing_4"]},"edges":{"from":[1,1,1,1,2,2,2,2,3,3,3,3],"to":[4,5,6,7,4,5,6,7,4,5,6,7],"label":["35","30","40","32","37","40","42","25","40","15","20","28"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":"to"},"layout":{"improvedLayout":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script><p>And then added the following notes:</p>
+<div id="htmlwidget-7d63ce8bf17bf300ee2e" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7d63ce8bf17bf300ee2e">{"x":{"nodes":{"id":[1,2,3,4,5,6,7],"shape":["triangle","triangle","triangle","square","square","square","square"],"label":["greenhouse_1","greenhouse_2","greenhouse_3","processing_1","processing_2","processing_3","processing_4"]},"edges":{"from":[1,1,1,1,2,2,2,2,3,3,3,3],"to":[4,5,6,7,4,5,6,7,4,5,6,7],"label":["35","30","40","32","37","40","42","25","40","15","20","28"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":"to"},"layout":{"improvedLayout":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script><p>And then added the following notes:</p>
 <blockquote>
 <p>Greenhouse 1 can only contribute 1200 pounds</p>
 </blockquote>
@@ -274,7 +274,7 @@ X_{14} + X_{24} + X_{34} \geq 750 \\
 X_{ij} \geq 0
 \end{aligned}
 \]</span></p>
-<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cMat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">35</span>, <span class="fl">30</span>, <span class="fl">40</span>, <span class="fl">32</span>, <span class="fl">37</span>, <span class="fl">40</span>,
      <span class="fl">42</span>, <span class="fl">25</span>, <span class="fl">40</span>, <span class="fl">15</span>, <span class="fl">20</span>, <span class="fl">28</span><span class="op">)</span>
 
@@ -315,10 +315,10 @@ Long-step dual simplex will be used
 +    10: mip =   8.400000000e+04 &gt;=     tree is empty   0.0% (0; 1)
 INTEGER OPTIMAL SOLUTION FOUND
 &lt;!SOLVER MSG&gt; ----</code></pre>
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">result</span><span class="op">$</span><span class="va">objval</span></code></pre></div>
 <pre><code>[1] 84000</code></pre>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></code></pre></div>
 <pre><code> [1] 850 350   0   0 250   0   0 750   0  50 750   0</code></pre>
 </div>
@@ -349,7 +349,7 @@ INTEGER OPTIMAL SOLUTION FOUND
 <p>Blaise</p>
 </blockquote>
 <p>Turns out, that Blaise was just asking for some version of a <em>knapsack</em> problem:</p>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">special_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>item <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cannabis_caviar"</span>, <span class="st">"oracle"</span>, <span class="st">"fruity_pebbles"</span>, 
                                      <span class="st">"loud_dream"</span>, <span class="st">"white_fire"</span>, <span class="st">"j1"</span>, 
                                      <span class="st">"hammerhead"</span>, <span class="st">"sista"</span>, <span class="st">"goblin"</span>, 
@@ -374,17 +374,19 @@ INTEGER OPTIMAL SOLUTION FOUND
 
 <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
-<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
-              6               0               0               0 
-     white_fire              j1      hammerhead           sista 
-              1               0               0               0 
-         goblin       fishermen           cloud        paradise 
-              0               0               0               0 </code></pre>
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<pre><code>cannabis_caviar          oracle  fruity_pebbles 
+              6               0               0 
+     loud_dream      white_fire              j1 
+              0               1               0 
+     hammerhead           sista          goblin 
+              0               0               0 
+      fishermen           cloud        paradise 
+              0               0               0 </code></pre>
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
 <pre><code>[1] 5300</code></pre>
 <p>Ali wondered, “What would happen if I changed that constraint to only be a 0 or a 1?”</p>
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/OP.html">OP</a></span><span class="op">(</span>objective <span class="op">=</span> <span class="va">special_items</span><span class="op">$</span><span class="va">value</span>, 
             constraints <span class="op">=</span> <span class="va">constraints</span>,
             types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep.int</a></span><span class="op">(</span><span class="st">"B"</span>, <span class="fl">12</span><span class="op">)</span>, 
@@ -394,13 +396,15 @@ INTEGER OPTIMAL SOLUTION FOUND
 
 <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
-<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
-              0               1               1               0 
-     white_fire              j1      hammerhead           sista 
-              1               0               0               1 
-         goblin       fishermen           cloud        paradise 
-              0               0               0               1 </code></pre>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<pre><code>cannabis_caviar          oracle  fruity_pebbles 
+              0               1               1 
+     loud_dream      white_fire              j1 
+              0               1               0 
+     hammerhead           sista          goblin 
+              0               1               0 
+      fishermen           cloud        paradise 
+              0               0               1 </code></pre>
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
 <pre><code>[1] 4550</code></pre>
 <p>What should Ali do?</p>
@@ -415,7 +419,7 @@ INTEGER OPTIMAL SOLUTION FOUND
       <ul class="nav navbar-nav">
 <li><a class="nav-link" href="#integer-programming"><span class="header-section-number">5</span> Integer Programming</a></li>
 <li><a class="nav-link" href="#troubling-solutions"><span class="header-section-number">5.1</span> Troubling Solutions</a></li>
-<li><a class="nav-link" href="#classoverflow-1"><span class="header-section-number">5.2</span> ClassOverflow</a></li>
+<li><a class="nav-link" href="#classoverflow-2"><span class="header-section-number">5.2</span> ClassOverflow</a></li>
 <li><a class="nav-link" href="#transportation-problems"><span class="header-section-number">5.3</span> Transportation Problems</a></li>
 <li><a class="nav-link" href="#binary-integer-programming"><span class="header-section-number">5.4</span> Binary Integer Programming</a></li>
 </ul>
@@ -434,7 +438,7 @@ INTEGER OPTIMAL SOLUTION FOUND
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-06.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

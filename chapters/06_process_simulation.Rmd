@@ -266,15 +266,15 @@ You will see different words for lines: buffers and queues. Just know that they 
 
 ## The Dispensary
 
-The interarrival times for customers follows an exponential distribution with $\mu = 2 \, minutes$.
+The interarrival times for customers follows an exponential distribution with a rate of 1 person every 1.5 minutes.
 
 The dispensary cannot hold any more than 8 people, for safety reasons. If a person arrives when the line is full, that person will not get in line.
 
-The ID check is approximately normal with $\mu=15 \, seconds$ and $\sigma = 3 \, seconds$.
+The ID check is approximately normal with $\mu=15 \, seconds$ and $\sigma = 3 \, seconds$. Once a person has their ID checked, they can sit in the lobby and there are 10 seats in the lobby.
 
 The bud tender's service time is $\mu = 2.4 \, minutes$ and $\sigma = .5 \, minutes$.
 
-
+Paying generally follows a uniform distribution, with a minimum of 5 seconds and a maximum of 15 seconds.
 
 ```{r}
 grViz("
@@ -325,18 +325,18 @@ After establishing our time, the next step for a customer is to `seize()` the "t
 ```{r, echo = TRUE, eval = FALSE}
 customer <- trajectory("Customer path") |>
   set_attribute("start_time", function() {now(dispensary)}) |>
-  seize("teller")
+  seize("id_check")
 ```
 
-Now things start to get tricky. We need to use `timeout()` to specify how long a customer is using the teller -- this is the teller's average working time. 
+Now things start to get tricky. We need to use `timeout()` to specify how long a customer is using the id check -- this is the check's average working time. 
 
-We can specify how long a teller is seized (i.e., how long the teller is working)  -- we provide a distribution with the appropriate values.
+We can specify how long an id check is seized (i.e., how long the check is working)  -- we provide a distribution with the appropriate values.
 
 ```{r, echo = TRUE, eval = FALSE}
 customer <- trajectory("Customer path") %>% 
   set_attribute("start_time", function() {now(dispensary)}) |>
-  seize("teller") |>
-  timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)})
+  seize("id_check") |>
+  timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)})
 ```
 
 After a customer spends time with the teller, the customer releases the counter.
@@ -344,10 +344,27 @@ After a customer spends time with the teller, the customer releases the counter.
 ```{r, echo = TRUE, eval = FALSE}
 customer <- trajectory("Customer path") %>% 
   set_attribute("start_time", function() {now(dispensary)}) |>
-  seize("teller") |>
-  timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |> 
-  release("teller")
+  seize("id_check") |>
+  timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+  release("id_check")
 ```
+
+From there, we can add the additional resources to our model:
+
+```{r, echo = TRUE, eval = FALSE}
+customer <- trajectory("Customer path") %>% 
+  set_attribute("start_time", function() {now(dispensary)}) |>
+  seize("id_check") |>
+  timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+  release("id_check") |>
+  seize("bud_tender") |>
+  timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
+  release("bud_tender") |>
+  seize("payment") |>
+  timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+  release("payment")
+```
+
 
 This is all we need to do for a customer, so now we can turn our attention to the dispensary.
 
@@ -361,20 +378,22 @@ Once we have our simulation environment defined, we can add resources to it with
 
 ```{r, echo = TRUE, eval = FALSE}
 dispensary <- simmer("dispensary") |>
-  add_resource("teller", capacity = 1, queue_size = 8)
+  add_resource("id_check", capacity = 1, queue_size = 8) |>
+  add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+  add_resource("payment", capacity = 2) 
 ```
 
 To this point, we have our customer behavior (how they move through our process) and information about our work stations. The last detail is the inter-arrival time, which we can specify with `add_generator()`. It works in very much the same way that `timeout()`, in that we are specifying a distribution. The `rexp` function in R takes a rate. If we remember that, on average, one person comes into the dispensary every two minutes, we can define our rate as $\frac{1}{2}$.
 
-<aside>
 Try this: mean(rexp(n = 10000, rate = 1/2))
-</aside>
 
 ```{r, echo = TRUE, eval = FALSE}
-dispensary <- simmer("dispensary") |> 
-  add_resource("teller", capacity = 1, queue_size = 8) |>
+dispensary <- simmer("dispensary") |>
+  add_resource("id_check", capacity = 1, queue_size = 8) |>
+  add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+  add_resource("payment", capacity = 2) |>
   add_generator("Customer", customer, function() {
-    c(0, rexp(n = 100, rate = 1/2), -1)
+    c(0, rexp(n = 100, rate = 1/1.5), -1)
   })
 ```
 
@@ -387,15 +406,25 @@ run(dispensary, until = 120)
 If we put it together, here is what we have:
 
 ```{r, echo = TRUE}
-customer <- trajectory("Customer path") |>
+customer <- trajectory("Customer path") %>% 
   set_attribute("start_time", function() {now(dispensary)}) |>
-  seize("teller") |> 
+  seize("id_check") |>
+  timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+  release("id_check") |>
+  seize("bud_tender") |>
   timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
-  release("teller")
+  release("bud_tender") |>
+  seize("payment") |>
+  timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+  release("payment")
 
-dispensary <- simmer("dispensary") |> 
-  add_resource("teller", capacity = 1, queue_size = 8) |> 
-  add_generator("Customer", customer, function() {c(0, rexp(100, 1/2), -1)})
+dispensary <- simmer("dispensary") |>
+  add_resource("id_check", capacity = 1, queue_size = 8) |>
+  add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+  add_resource("payment", capacity = 2) |>
+  add_generator("Customer", customer, function() {
+    c(0, rexp(n = 100, rate = 1/1.5), -1)
+  })
 
 run(dispensary, until = 120)
 ```
@@ -422,13 +451,13 @@ nrow(result[result$finished == TRUE, ]) / nrow(result)
 
 The `nrow` function will tell us how many rows are in the data. In the numerator, we filtered those rows were finished was equal to TRUE (giving us the number of people who made it into the system).
 
-Now we need to calculate how long each person was in line. We will do that with the `mutate` function from dplyr.
+Now we need to calculate how long each person was in line. 
 
 ```{r, echo = TRUE}
 result$wait_time <- result$end_time - result$start_time - result$activity_time
 ```
 
-Now, we can find the average wait time. We only want to do it for those who actually made it into the system though! To do that, we can use the `filter` (again, from dplyr).
+Now, we can find the average wait time. We only want to do it for those who actually made it into the system though!
 
 ```{r, echo = TRUE}
 completeOnly <- result[result$finished == TRUE, ]
@@ -444,18 +473,29 @@ We have a few choices. One choice is that we just replicate our procedure a cert
 
 ```{r, eval = FALSE, echo = TRUE}
 sim50Runs <- replicate(50, expr = {
-  customer = trajectory("Customer path") |> 
-    set_attribute("start_time", function() {now(bank)}) |>
-    seize("teller") |>
+  customer <- trajectory("Customer path") %>% 
+    set_attribute("start_time", function() {now(dispensary)}) |>
+    seize("id_check") |>
+    timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+    release("id_check") |>
+    seize("bud_tender") |>
     timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
-    release("teller")
+    release("bud_tender") |>
+    seize("payment") |>
+    timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+    release("payment")
   
-  bank <- simmer("bank") %>% 
-    add_resource("teller", capacity = 1, queue_size = 8) |>
-    add_generator("Customer", customer, function() {c(0, rexp(100, 1/2), -1)})
+  dispensary <- simmer("dispensary") |>
+    add_resource("id_check", capacity = 1, queue_size = 8) |>
+    add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+    add_resource("payment", capacity = 2) |>
+    add_generator("Customer", customer, function() {
+      c(0, rexp(n = 100, rate = 1/1.5), -1)
+    })
   
-  run(bank, until = 120)
+  run(dispensary, until = 120)
   
   result <- get_mon_arrivals(bank)
+  
 }, simplify = FALSE)
 ```

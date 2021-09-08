@@ -1,0 +1,340 @@
+---
+title: "Ali's Guide To Data Manipulation"
+output:
+  distill::distill_article:
+    toc: true
+    toc_float: true
+    highlight: tango
+    highlight_downlit: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE, comment = "")
+```
+
+Optimization seemed a little easy on the data manipulation side, but one particular problem had me a little shook. I was given a problem in a csv file and I needed to break it down into smaller pieces. Seemed easy to do, but I wanted to try it a few different ways: base R and dplyr.
+
+## Data Read
+
+```{r}
+advert <- read.csv("https://raw.githubusercontent.com/saberry/SimOps/main/advertising_data.csv")
+
+advert
+```
+
+It seems like that X column must have been row names within the sheet -- that's okay, I think I'll just give it a name:
+
+```{r}
+names(advert)[which(names(advert) == "X")] <- "rules"
+```
+
+I took the names of advert and then tested which of those names was strictly equal to "X" -- that is the name that I changed to rules.
+
+Having that as a column should be pretty easy now.
+
+## Filtering
+
+In all my looking around on StackOverflow, it seems like there is always a base R way of doing things and a dplyr way of doing things. If I need to filter my data down, I'd like to see what that looks like both ways. I'm going to start with pulling the `c vector` out. When I look at the data, I know that the cvec is in the very last row. I know that I am going to need to drop the rules and demographic_total columns
+
+### base R
+
+```{r}
+base_objective_function <- advert[advert$rules == "cost", ]
+```
+
+The row side of this is simple: give me the rows were advert$rules is strictly equal to "cost". 
+
+### dplyr
+
+Let's see how this same function would work in dplyr:
+
+```{r}
+library(dplyr)
+
+dplyr_objective_function <- advert %>%
+  filter(rules == "cost")
+```
+
+So `filter` seems pretty simple here. It isn't much different than what I do with base R, but it does have a nice verb to remind me about what I'm doing.
+
+## Selecting Rows
+
+### base R
+
+```{r}
+base_objective_function[, !(names(advert) %in% c("rules", "demographic_total"))]
+```
+
+Since I already filtered the rows, I can move to the column selection part; however, it seems a little trickier. I will ignore the `!` for now, so I can worry about what is in the parentheses. First I am running the names function on advert -- this just provides a vector of the names within the data frame. Then, I am using the `%in%` operator to match the names to the vector containing just "rules" and "demographic_total". This finds the names in advert that offer an exact match. This is what I would get:
+
+```{r}
+names(advert) %in% c("rules", "demographic_total")
+```
+
+A whole bunch of TRUEs and FALSEs.
+
+When I throw the `!` in at the front, I am saying "give me the things that do not match" -- in other words, just return the columns that are equal to FALSE. This is a trick that I'll probably find very helpful in many data wrangling quests.
+
+### dplyr
+
+```{r}
+dplyr_objective_function %>%
+  select(cosmopolitan:country_living)
+```
+
+Since I created our `dplyr_objective_function` object already, I'll pipe to `select` -- there are a lot of different ways to select data here. In this select, I have included the range of variables from `cosmopolitan` to `country_living`; the `:` is working just like it typically does in R by providing a range.
+
+## Filter And Select
+
+I'd figure that there is a way to put all of these things together into "single" lines:
+
+### base R
+
+```{r}
+base_objective_function <- advert[advert$rules == "cost", 
+                                  !(names(advert) %in% 
+                                      c("rules", "demographic_total"))] |>
+  as.matrix()
+```
+
+
+### dplyr
+
+```{r}
+dplyr_objective_function <- advert %>%
+  filter(rules == "cost") %>%
+  select(cosmopolitan:country_living) %>% 
+  as.matrix()
+```
+
+And I can! The dplyr version is definitely more "readable", but I feel like the base way requires less work. Purely curious, but I wonder if there is a speed difference:
+
+```{r}
+library(microbenchmark)
+
+base_function <- function(){
+  advert[advert$rules == "cost", 
+         !(names(advert) %in% 
+             c("rules", "demographic_total"))] |>
+    as.matrix()
+}
+
+dplyr_function <- function(){
+  advert %>%
+    filter(rules == "cost") %>%
+    select(cosmopolitan:country_living) %>% 
+    as.matrix()
+}
+
+microbenchmark(base_function(), dplyr_function(), times = 500)
+```
+
+It seems like base is much faster...interesting.
+
+<aside>
+Speed differences are weird. For some problems, dplyr might be faster.  
+Might also mean your base isn't as good as it could be.  
+The data.table package reigns supreme when speed is at play.
+</aside>
+
+## Single Chunks For Solving
+
+### base R
+
+```{r}
+library(linprog)
+
+base_objective_function <- advert[advert$rules == "cost", 
+                                  !(names(advert) %in% 
+                                      c("rules", "demographic_total"))] |>
+  as.matrix()
+```
+
+Since I only want the demographic totals, I can just use the dollar sign and then say give me the rows where rules does not equal "cost":
+
+```{r}
+base_constraint_margins <- advert$demographic_total[advert$rules != "cost"] |>
+  as.matrix()
+
+base_constraint_directions <- rep(">=", length(base_constraint_margins))
+
+base_constraint_matrix <- advert[advert$rules != "cost", 
+                                 !(names(advert) %in% 
+                                     c("rules", "demographic_total"))] |>
+  as.matrix()
+
+base_res <- solveLP(base_objective_function, 
+                    base_constraint_margins, 
+                    base_constraint_matrix, 
+                    maximum = FALSE, 
+                    const.dir = base_constraint_directions)
+
+base_solution <- base_res$solution
+```
+
+
+### dplyr
+
+```{r}
+dplyr_objective_function <- advert %>%
+  filter(rules == "cost") %>%
+  select(cosmopolitan:country_living) %>% 
+  as.matrix()
+```
+
+It turns out that dplyr is going to try to keep all the names within my margins; this sounds great, but linprog will cry if those dimnames are there. To that end, I will have to `unname` at the end of my next pipe.
+
+```{r}
+dplyr_constraint_margins <- filter(advert, rules != "cost") %>%
+  select(demographic_total) %>% 
+  as.matrix() %>%
+  unname()
+
+# No special rep -- the base R rep is all anyone needs:
+dplyr_constraint_directions <- rep(">=", length(dplyr_constraint_margins))
+
+dplyr_constraint_matrix <-   advert %>% 
+  filter(rules != "cost") %>%
+  select(cosmopolitan:country_living) %>%
+  as.matrix()
+
+dplyr_res <- solveLP(dplyr_objective_function, 
+                     dplyr_constraint_margins, 
+                     dplyr_constraint_matrix, 
+                     maximum = FALSE, 
+                     const.dir = dplyr_constraint_directions)
+
+dplyr_solution <- dplyr_res$solution
+```
+
+
+## The Final Straw: Bind/Merge/Join
+
+I've got solutions either way, but what I really want is to be able to put those what I achieved back into my original data.
+
+I'll just use the base results, because they are all the same:
+
+```{r}
+str(base_res)
+```
+
+I see that base_res is a list, that contains a mix of different things. It looks like the object I want is called `con`:
+
+```{r}
+base_res$con
+```
+
+That gives me the data frame, so I can probably just toss another `$` in there:
+
+```{r}
+achieved_values <- base_res$con$actual
+```
+
+No doubt that there are many ways to handle this task, so I'll try some out:
+
+```{r, eval = FALSE}
+advert$base_achieved_values <- achieved_values
+```
+
+> Error in `$<-.data.frame`(`*tmp*`, base_achieved_values, value = c(210,  :   
+> replacement has 6 rows, data has 7
+
+This won't work -- I don't have a match in the length of `achieved_values` and the nrow() of advert.
+
+Let me see if dplyr works:
+
+```{r, eval = FALSE}
+advert %>%
+  mutate(dplyr_achieved_values = achieved_values)
+```
+
+> Error: Problem with `mutate()` column `dplyr_achieved_values`.  
+> i `dplyr_achieved_values = achieved_values`.  
+> i `dplyr_achieved_values` must be size 7 or 1, not 6.  
+> Run `rlang::last_error()` to see where the error occurred.  
+
+Same problem, just a slightly different message.
+
+I wonder if I can bind them:
+
+```{r, eval = FALSE}
+cbind(advert, achieved_values)
+```
+
+> Error in data.frame(..., check.names = FALSE) : 
+> arguments imply differing number of rows: 7, 6
+
+Maybe dplyr will work for this one:
+
+```{r, eval = FALSE}
+bind_cols(advert, achieved_values)
+```
+
+> Error: Can't recycle `..1` (size 7) to match `..2` (size 6).  
+
+I have been forsaken. Every method that I would usually use to add a column to a data frame will not work. 
+
+After some time poking around, I figured out a way to handle the situation: merge/join!
+
+I can start with taking those results and putting them into a data frame:
+
+```{r}
+achieved_results_df <- data.frame(achieved_values = achieved_values)
+```
+
+Next, I can take the rules from our original data and put them into our new data frame:
+
+```{r}
+advert_rules <- advert$rules[advert$rules != "cost"]
+
+achieved_results_df$rules <- advert_rules
+```
+
+Awesome, I just created an object called `advert_rules` that was just the rules column with the cost row dropped out.
+
+I could have also used the mutate function:
+
+```{r}
+achieved_results_df %>%
+  mutate(dplyr_rules = advert_rules)
+```
+
+Certainly no difference in the results!
+
+Finally, we can try two different methods for bringing these two data frames together:
+
+### base R
+
+In base R, we have a function called `merge`:
+
+```{r}
+merge(x = advert, y = achieved_results_df, # These are the data frames I am merging
+      by.x = "rules", by.y = "rules", # These are the names from x&y that I am using
+      all.x = TRUE, all.y = FALSE) # I want to keep everything in advert
+```
+
+You likely noticed that we set both `by.x` and `by.y` -- this is most useful when the column names you want to join are different. Since our columns have the same names, we could also have done this:
+
+```{r}
+merge(x = advert, y = achieved_results_df, 
+      by = "rules",
+      all.x = TRUE, all.y = FALSE) 
+```
+
+
+### dplyr
+
+If we live in the SQL world, we just did a `left_join`, which is exactly what we can do with dplyr:
+
+```{r}
+left_join(x = advert, y = achieved_results_df, 
+          by = c("rules" = "rules"))
+```
+
+Same `by` issue applies here:
+
+```{r}
+left_join(x = advert, y = achieved_results_df, 
+          by = "rules")
+```
+

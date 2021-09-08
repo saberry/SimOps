@@ -1,0 +1,286 @@
+---
+title: "LP Exercies"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+
+## Working Together
+
+```{r}
+library(linprog)
+
+# First, we need to read in data from the web. The row.names = 1 argument
+# is saying to set the first column in the data as the row names.
+
+advert <- read.csv("https://raw.githubusercontent.com/saberry/SimOps/main/advertising_data.csv", 
+                   row.names = 1)
+
+# Everything we need is in that advert data frame, but we have to break
+# it into smaller chunks: the cvec, bvec, and amat. The easiest
+# way to make that happen is to find the objects that you want to
+# remove from the entire data frame.
+
+# Easiest to break these functions down from the inside. 
+# The names function will return all of the column names
+# within the advert data -- it just prints out a vector
+# of all the variable names. When that is wrapped in the
+# which function, it answers the question of "Which
+# of those variables names is an exact match to the word
+# "demographic_total; the exact matching column number if
+# 10.
+
+dropDemos <- which(names(advert) == "demographic_total")
+
+# Now that we now the demographic column is identified, we
+# can drop that column using -c(dropDemos) -- literally saying
+# to drop the 10th column. For the cvec, we are using the
+# cost row. Putting it together, we will select the "cost" row, 
+# drop the demographic column and convert the result to a matrix.
+
+objectiveFunction <- as.matrix(advert["cost", -c(dropDemos)])
+
+# Now, we need to drop out the cost row. We can engage in a very
+# similar process to what we did earlier, but instead we can use
+# the rownames function. 
+
+dropCost <- which(rownames(advert) == "cost")
+
+# The margins of the problem rest in the demographic column (i.e., 
+# we need to have at least this many exposures across the 6
+# demographic groups). We will drop the cost row -- -c(dropCost) --
+# and then select the demographic_total column.
+
+constraintMargins <- as.matrix(advert[-c(dropCost), "demographic_total"])
+
+# Finally, we can pull out the A matrix by dropping the cost row and
+# dropping the demographic column.
+
+constraintMatrix <- as.matrix(advert[-c(dropCost), -c(dropDemos)])
+
+res <- solveLP(objectiveFunction, constraintMargins, constraintMatrix, 
+              maximum = FALSE, const.dir = rep(">=", length(constraintMargins)))
+
+res$opt
+
+res$solution
+
+res$con
+```
+
+### Keeping Track Of Variables
+
+### Lower and Upper Bounds
+
+
+## Solve this problem
+
+$$
+\begin{aligned}
+\text{Maximize:}\\
+\text{revenue} = 40_{oil} + 7.5_{flower} \\
+\text{Subject to:} \\
+\text{needs} = 30_{oil} + 3_{flower} \leq 8960 \\
+\text{oil}, \text{flower} \geq 0
+\end{aligned}
+$$
+
+```{r}
+library(linprog)
+
+# The bottom line, "oil,flower >= 0" is implicit in the problem and never
+# needs specified.
+
+objectiveFunction <- c(40, 7.5) # This is the top line (cvec) of the equation
+
+constraintValues <- c(8960) # We only have one real margin (bvec) to handle here.
+
+constraintDirections <- c("<=")
+
+constraintMatrix <- rbind(c(30, 3)) # Only one row in the constraint matrix (A mat)
+
+linprog::solveLP(cvec = objectiveFunction, 
+                 bvec = constraintValues, 
+                 Amat = constraintMatrix, 
+                 maximum = TRUE, 
+                 const.dir = constraintDirections)
+```
+
+In total, we could make 22400 dollars, by making 0 units of oil and 2986.67 units of flower.
+
+### Adding Upper and Lower Bounds
+
+Produce at least 50 grams of oil and make note of what happens.
+
+This just becomes an extra constraint to the model (we are saying that we need to make at least 50 units of oil, but nothing specified for flower):
+
+$$
+\begin{aligned}
+\text{Maximize:}\\
+\text{revenue} = 40_{oil} + 7.5_{flower} \\
+\text{Subject to:} \\
+\text{needs} = 30_{oil} + 3_{flower} \leq 8960 \\
+\text{oil_needs} = 1_{oil} + 0_{flower} \geq 50 \\
+\end{aligned}
+$$
+
+We are going to do this two ways: both will yield the same result, so use whichever makes the most sense to you.
+
+#### linprog
+
+```{r}
+objectiveFunction <- c(40, 7.5) # Unless we add another variable, nothing changes here.
+
+constraintValues <- c(8960, 50) # Just adding the extra information into out bvec
+
+constraintDirections <- c("<=", ">=") # One more direction to deal with.
+
+# We have an extra row, with the 1,0 combination for oil.
+constraintMatrix <- rbind(c(30, 3), 
+                          c(1, 0)) 
+
+linprog::solveLP(cvec = objectiveFunction, 
+                 bvec = constraintValues, 
+                 Amat = constraintMatrix, 
+                 maximum = TRUE, 
+                 const.dir = constraintDirections)
+```
+
+That works just fine and will always work. Let's see how that works with ROI.
+
+Remember, ROI has functions in place to make this an easier process:
+
+
+```{r}
+library(ROI)
+
+# You will notice that all of these are the original objects.
+
+objectiveFunction <- c(40, 7.5) # This is the top line (cvec) of the equation
+
+constraintValues <- c(8960) # We only have one real margin (bvec) to handle here.
+
+constraintDirections <- c("<=")
+
+constraintMatrix <- rbind(c(30, 3)) # Only one row in the constraint matrix (A mat)
+
+# ROI makes us create the constraint object using this L_constraint function.
+# The argument are just as they appear in the mathematic specification:
+
+linear_constraints <- L_constraint(L = constraintMatrix, 
+                                   dir = constraintDirections, 
+                                   rhs = constraintValues)
+
+# Now, we can specify our lower bound for the oil variable:
+
+# In our model, we have two variables: oil and flower. 
+# If we put a number order to those variables we have:
+# oil = 1
+# flower = 2
+# We only want to set a lower bound for oil, so we can
+# specify an li (i.e., lower index value) to 1 and
+# set the lb (i.e., the lower bound value) to 50.
+
+oil_lower_bound <- V_bound(li = c(1), lb = c(50), nobj = 2)
+
+# This only creates the model:
+model_create <- OP(objective = objectiveFunction, 
+                   constraints = linear_constraints, 
+                   bounds = oil_lower_bound, 
+                   maximum = TRUE)
+
+# This solves the model:
+model_solved <- ROI_solve(model_create)
+
+# This gives us the values for oil and flower (i.e., x = 50 & y = 2486.667)
+solution(model_solved)
+
+#And now we have the total amount made:
+solution(model_solved, "objval")
+```
+
+The return is exactly the same that we got from linprog. Again, I leave it to you to determine which you find easier.
+
+
+Keep your lower bound for oil, and also specify an upper bound to keep flower less than or equal to 2000. How does your solution change?
+
+Let's update the notation:
+
+$$
+\begin{aligned}
+\text{Maximize:}\\
+\text{revenue} = 40_{oil} + 7.5_{flower} \\
+\text{Subject to:} \\
+\text{needs} = 30_{oil} + 3_{flower} \leq 8960 \\
+\text{oil_needs} = 1_{oil} + 0_{flower} \geq 50 \\
+\text{flower_cap} = 0_{oil} + 1_{flower} \leq 2000 \\
+\end{aligned}
+$$
+
+```{r}
+objectiveFunction <- c(40, 7.5) # Still nothing changes here.
+
+# Now, we have a third constraint: the upper bound for flower:
+constraintValues <- c(8960, 50, 2000) 
+
+# And that upper bound has a <= constraint:
+constraintDirections <- c("<=", ">=", "<=") 
+
+# We have an extra row, with the 1,0 combination for oil.
+# And also the 0, 1 combination for flower:
+constraintMatrix <- rbind(c(30, 3), 
+                          c(1, 0), 
+                          c(0, 1)) 
+
+linprog::solveLP(cvec = objectiveFunction, 
+                 bvec = constraintValues, 
+                 Amat = constraintMatrix, 
+                 maximum = TRUE, 
+                 const.dir = constraintDirections)
+```
+
+And our flower has been capped at 2000, as we have specified.
+
+Now, we can try it with ROI:
+
+```{r}
+objectiveFunction <- c(40, 7.5) 
+
+constraintValues <- c(8960) 
+
+constraintDirections <- c("<=")
+
+constraintMatrix <- rbind(c(30, 3)) 
+
+linear_constraints <- L_constraint(L = constraintMatrix, 
+                                   dir = constraintDirections, 
+                                   rhs = constraintValues)
+
+# We already have our lower bound for oil (oil = index value 1), 
+# so we can add an upper bound for flower. Remember, flower is the
+# second variable, so it has an index value of 2. 
+
+oil_lower_bound <- V_bound(li = c(1), lb = c(50), 
+                           ui = c(2), ub = c(2000),
+                           nobj = 2)
+
+# This only creates the model:
+model_create <- OP(objective = objectiveFunction, 
+                   constraints = linear_constraints, 
+                   bounds = oil_lower_bound, 
+                   maximum = TRUE)
+
+# This solves the model:
+model_solved <- ROI_solve(model_create)
+
+# This gives us the values for oil and flower (i.e., x = 50 & y = 2486.667)
+solution(model_solved)
+
+#And now we have the total amount made:
+solution(model_solved, "objval")
+```
+
+Again, we have the exact same output!

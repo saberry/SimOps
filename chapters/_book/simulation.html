@@ -51,21 +51,188 @@
 <h1>
 <span class="header-section-number">5</span> Simulation<a class="anchor" aria-label="anchor" href="#simulation"><i class="fas fa-link"></i></a>
 </h1>
-<p>Why are you looking this far ahead?</p>
-<p>Focus on the present instead.</p>
-<!-- Programming the world around you. -->
-<!-- ## Problems -->
-<!-- ## Theory -->
-<!-- ## Application -->
-<!-- ## Additional Resources -->
+<p>Ali was hearing a lot of people talk about “what if” scenarios and frankly, the requests for new work was coming in too fast. After dealing with marketing and retail problems, they would keep coming back to ask more questions. “What if we would purchase this many items?”, Boa and Blaise both asked. Even Castel was asking for information when the greenhouse situations would change. It seemed like Ali really needed to turn all of the code into functions…but a thought started chewing away at Ali brain.</p>
+<p>“What if all of those things are just variables from different distributions”.</p>
+<p>“If I know the past, I can figure out the distribution, and spin up some tables”.</p>
+<p>The final straw was this email from Chaman, the head of grow operations:</p>
+<blockquote>
+<p>Good afternoon Ali,</p>
+</blockquote>
+<blockquote>
+<p>We have an interesting problem in our grow operations right now. Our plants are very successful, but a new strain isn’t really behaving how we would expect, given the expected probability of full maturation. Nearly 99.9% of these plants live and the maturation cycle runs about 65 days. We started with a 1000 plants on our last run, but we only ended up with 750 plants at the end of the growing cycle. We also had some weird pump failures; we’d think it would only happen about 1/100 times.</p>
+</blockquote>
+<p>Ali knew that two other analysts might be able to offer some insight: Shashi knew everything statistical and Alex was the simulation wizard.</p>
+<p>Starting at the beginning is always important, so Ali swung by Shashi’s cubicle.</p>
+<div id="distributions" class="section level2" number="5.1">
+<h2>
+<span class="header-section-number">5.1</span> Distributions<a class="anchor" aria-label="anchor" href="#distributions"><i class="fas fa-link"></i></a>
+</h2>
+<p>“You were right to come to me first”, Shashi said, “I’ll fill you in on a few distributions that might be helpful to you.”</p>
+<p>“Distributions drive every single part of simulation – every event that you can ever imagine comes from some type of distribution.”, Shashi said.</p>
+<div id="normal-distribution" class="section level3" number="5.1.1">
+<h3>
+<span class="header-section-number">5.1.1</span> Normal Distribution<a class="anchor" aria-label="anchor" href="#normal-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>“For our normal distribution, we know the <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.”</p>
+<p>“It is likely the most common and you’ll find that a lot of processes are normally distributed.”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-25-1.png" width="672"></div>
+<p>“You might get customer data and want to test if a variable is normally distributed.”</p>
+<p>“Let’s start by creating a normal distribution.”</p>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">normal_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5000</span>, mean <span class="op">=</span> <span class="fl">2.5</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></code></pre></div>
+<p>“And an exponential distribution…I’ll tell you more about that in a few minutes.”</p>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">exponential_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5000</span>, rate <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></code></pre></div>
+<p>“We can check both with a qq plot for normality.”</p>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-28-1.png" width="672"></div>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-28-2.png" width="672"></div>
+<p>“The normal distribution will follow the diagonal perfectly, but the exponential looks like it curves down”.</p>
+<p>“If you ever want to test for the normal distribution, you can just use the Shapiro test.”</p>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
+<pre><code>
+    Shapiro-Wilk normality test
 
+data:  normal_variable
+W = 0.99966, p-value = 0.5733</code></pre>
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
+<pre><code>
+    Shapiro-Wilk normality test
+
+data:  exponential_variable
+W = 0.81236, p-value &lt; 2.2e-16</code></pre>
+<p>“Think about it like this”, Shashi said, “We are trying to test if our observed distribution is significantly different than a normal distribution.”</p>
+<p>“We would want to see a <em>p</em>-value above .05 to suggest that we might be dealing with a normally-distributed variable.”</p>
+<p>“Clearly, the exponential distribution is significantly different.”</p>
+<p>“That is awesome!”, Ali said.</p>
+</div>
+<div id="binomial-distribution" class="section level3" number="5.1.2">
+<h3>
+<span class="header-section-number">5.1.2</span> Binomial Distribution<a class="anchor" aria-label="anchor" href="#binomial-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>“Anything that has two outcomes – dead/alive, failure/success, missed/made – can be modeled with a binomial distribution.”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672"></div>
+</div>
+<div id="exponential-distribution" class="section level3" number="5.1.3">
+<h3>
+<span class="header-section-number">5.1.3</span> Exponential Distribution<a class="anchor" aria-label="anchor" href="#exponential-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>“We can only know one thing about the exponential distribution: <span class="math inline">\(\mu\)</span> (also expressed as a rate).”</p>
+<p>“Just about any arrival process can be approximated by an exponential distribution.”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672"></div>
+<p>“That rate parameter is a bit confusing…the easiest way to express it is as a ratio.”</p>
+<p>“If 3 people enter the store every minute and a half, than it would be a rate of 3/1.5”.</p>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10000</span>, rate <span class="op">=</span> <span class="fl">3</span> <span class="op">/</span> <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-32-1.png" width="672"></div>
+<p>“You could also just put the average rate in.”</p>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10000</span>, rate <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-33-1.png" width="672"></div>
+<p>“They are really the same thing.”</p>
+</div>
+<div id="poisson-distribution" class="section level3" number="5.1.4">
+<h3>
+<span class="header-section-number">5.1.4</span> Poisson Distribution<a class="anchor" aria-label="anchor" href="#poisson-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>“The poisson is an interesting distribution – it tends to deal with count-related variables. It tells us the probability of a count occurring. We know its <span class="math inline">\(\lambda\)</span>.”</p>
+<p>“The <span class="math inline">\(\lambda\)</span> is just a fancy way of saying the average number of events, or the incidence rate.”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-34-1.png" width="672"></div>
+</div>
+<div id="uniform-distribution" class="section level3" number="5.1.5">
+<h3>
+<span class="header-section-number">5.1.5</span> Uniform Distribution<a class="anchor" aria-label="anchor" href="#uniform-distribution"><i class="fas fa-link"></i></a>
+</h3>
+<p>“While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not – I would say that distinction belongs to the uniform distribution. We don’t even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range.”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-35-1.png" width="672"></div>
+<p>“Sound cool?”, Shashi asked.</p>
+<p>“For sure!”, Ali replied, and went off to find Alex.</p>
+</div>
+</div>
+<div id="an-arguement" class="section level2" number="5.2">
+<h2>
+<span class="header-section-number">5.2</span> An Arguement<a class="anchor" aria-label="anchor" href="#an-arguement"><i class="fas fa-link"></i></a>
+</h2>
+<p>As soon as Ali started talking to Alex, a tangent started. “First and foremost, I want to set you straight on something: simulation is not what-if analysis.”</p>
+<p>“What’s the different?”, Ali asked.</p>
+<p>“The what-if analysis isn’t really guided by distributions, but more along the lines of low, medium, and high values.”</p>
+<p>“I think I need an example.”, Ali said.</p>
+<p>“I thought you’d never ask!”, Alex exclaimed.</p>
+<p>“Let’s look at a really simple process: the number of people who come into a retail store.”</p>
+<p>“Let’s say that every person who buys something in the store, shops for 20 minutes on average, with a standard deviation of 2.5 minutes.”</p>
+<p>“We might just be interested to know how much total time those people are in the store.”</p>
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">what_if_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>low_value <span class="op">=</span> <span class="fl">50</span>,
+                   mid_value <span class="op">=</span> <span class="fl">100</span>,
+                   high_value <span class="op">=</span> <span class="fl">150</span><span class="op">)</span>
+
+<span class="va">what_if_sums</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">what_if_times</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">x</span>, mean <span class="op">=</span> <span class="fl">20</span>, sd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+
+<span class="va">what_if_sums</span></code></pre></div>
+<pre><code> low_value  mid_value high_value 
+  988.4935  2015.7349  3004.1466 </code></pre>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">what_if_sums</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 2002.792</code></pre>
+<p>“That seems simple enough.”, remarked Ali. “Those answers really seem pretty obvious.”</p>
+<p>Alex nodded. “They definitely do, but we have a potential problem here.”</p>
+<p>Ali had absolutely zero idea where Alex was going.</p>
+<p>“Let me give you some more info; we are giving all of those an equal probability of occurring.” Alex asked, “Does that seem reasonable?”</p>
+<p>“Probably not.”, Ali admitted.</p>
+<p>“The most common number of people that come into the score is 100, but the highs and lows rarely happen.”</p>
+<p>“Check this distribution out:”</p>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-37-1.png" width="672"></div>
+<p>“In the triangular distribution, we have a few parameters: the lower limit, the upper limit, and the mode.”</p>
+<p>“That looks wild!”, Ali smiled.</p>
+<p>“Now, let’s see how we can incorporate this into a really small simulation.”</p>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://bertcarnell.github.io/triangle/">triangle</a></span><span class="op">)</span>
+
+<span class="va">triangle_draws</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://bertcarnell.github.io/triangle/reference/triangle.html">rtriangle</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1000</span>, a <span class="op">=</span> <span class="fl">50</span>, b <span class="op">=</span> <span class="fl">150</span>, c <span class="op">=</span> <span class="fl">100</span><span class="op">)</span>
+
+<span class="va">tri_sum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">triangle_draws</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">x</span>, mean <span class="op">=</span> <span class="fl">20</span>, sd <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">tri_sum</span><span class="op">)</span></code></pre></div>
+<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-38-1.png" width="672"></div>
+<p>“Is the average wildly different?”, Alex asked.</p>
+<p>“Nope!”, Ali said, “but that is a much better representation of what we would expect!”</p>
+</div>
+<div id="classoverflow-2" class="section level2" number="5.3">
+<h2>
+<span class="header-section-number">5.3</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow-2"><i class="fas fa-link"></i></a>
+</h2>
+<p>Let’s spend some time together working through the email from earlier.</p>
+
+</div>
 </div>
   <div class="chapter-nav">
 <div class="prev"><a href="integer-programming.html"><span class="header-section-number">4</span> Integer Programming</a></div>
 <div class="next"><a href="nonlinear-optimization.html"><span class="header-section-number">6</span> Nonlinear Optimization</a></div>
 </div></main><div class="col-md-3 col-lg-2 d-none d-md-block sidebar sidebar-chapter">
     <nav id="toc" data-toggle="toc" aria-label="On this page"><h2>On this page</h2>
-      <ul class="nav navbar-nav"><li><a class="nav-link" href="#simulation"><span class="header-section-number">5</span> Simulation</a></li></ul>
+      <ul class="nav navbar-nav">
+<li><a class="nav-link" href="#simulation"><span class="header-section-number">5</span> Simulation</a></li>
+<li>
+<a class="nav-link" href="#distributions"><span class="header-section-number">5.1</span> Distributions</a><ul class="nav navbar-nav">
+<li><a class="nav-link" href="#normal-distribution"><span class="header-section-number">5.1.1</span> Normal Distribution</a></li>
+<li><a class="nav-link" href="#binomial-distribution"><span class="header-section-number">5.1.2</span> Binomial Distribution</a></li>
+<li><a class="nav-link" href="#exponential-distribution"><span class="header-section-number">5.1.3</span> Exponential Distribution</a></li>
+<li><a class="nav-link" href="#poisson-distribution"><span class="header-section-number">5.1.4</span> Poisson Distribution</a></li>
+<li><a class="nav-link" href="#uniform-distribution"><span class="header-section-number">5.1.5</span> Uniform Distribution</a></li>
+</ul>
+</li>
+<li><a class="nav-link" href="#an-arguement"><span class="header-section-number">5.2</span> An Arguement</a></li>
+<li><a class="nav-link" href="#classoverflow-2"><span class="header-section-number">5.3</span> ClassOverflow</a></li>
+</ul>
 
       <div class="book-extra">
         <ul class="list-unstyled">
@@ -81,7 +248,7 @@
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

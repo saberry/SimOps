@@ -1,0 +1,272 @@
+---
+title: "LP Team Time"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+
+Fender guitars recently released the American Professional II series of guitars -- this represents the mid-tier of the American-made instruments. The lowest tier of the American series is the American
+Perform and the highest tier is the Ultra. 
+
+Average profits are as follows:  
+
+Performer: 1200  
+Professional II: 1300  
+Ultra: 1400  
+
+Given the shocks to global supply chains, materials are in short supply. Every guitar in this series requires the following components:
+
+1 body blank, 1 neck blank, 1 tuner set, 1 electronic set, 1 bridge set  
+
+All guitars use the same body and neck blanks. The Professional II and Ultra use the same electronics, bridges, and tuners. The Performer uses different electronics, bridges, and tuners than the others. Currently, Fender has 1500 neck and body blanks each. Fender also has 500 tuner sets, electronic sets, and bridge sets for the Professional II and Ultra series. They also have 1000 tuner, electronic, and bridge sets for the Performer series. Most of the demand occurs at the upper and lower series, but Fender knows that they need at least 200 Professional IIs. How should Fender maximize profits for these 3 different series?
+
+
+```{r}
+library(ROI)
+library(ROI.plugin.glpk)
+
+cvec <- c(performer = 1200, 
+          proII = 1300, 
+          ultra = 1400)
+
+bvec <- c(1500, 1500, rep(500, 3), rep(1000, 3), 200)
+
+direction <- c(rep("<=", 8), ">=")
+
+Amat <- rbind(all_neck = c(1, 1, 1),
+              all_body = c(1, 1, 1),
+              pro_ultra_tuner = c(0, 1, 1),
+              pro_ultra_elec = c(0, 1, 1),
+              pro_ultra_bridge = c(0, 1, 1),
+              performer_tuner = c(1, 0, 0),
+              performer_elec = c(1, 0, 0),
+              performer_bridge = c(1, 0, 0),
+              proII_demand = c(0, 1, 0))
+
+linprog::solveLP(cvec, bvec, Amat, TRUE, direction)
+
+OP(cvec, L_constraint(Amat, direction, bvec), maximum = TRUE) |>
+  ROI_solve() |>
+  solution()
+```
+
+# Question 2
+
+You like making money? I thought so! Let's imagine that each of the following investment strategies has some type of yearly ROI percent, assessed risk factor, and terms of investment in years:
+
+```{r, results='asis', echo = FALSE}
+data.frame(Strategy = c("Blue chip stocks", "Bonds", "Growth stocks", 
+                        "Speculation", "Cash"), 
+           ROI = c(12, 10, 15, 25, 0),
+           Risk = c(2, 1, 3, 4, 0), 
+           Term = c(4, 8, 2, 10, 0)) |>
+  stargazer::stargazer(summary = FALSE, header = FALSE)
+```
+
+
+We want to maximize the return, but our risk should not exceed 2.5, we should not exceed 6 years of investment, and we need at least 15% of our portfolio to be in cash. What proportion should be invested in each type?
+
+```{r}
+cvec <- c(bcStocks = 12, bonds = 10, gStocks = 15,  spec = 25, cash = 0)
+
+bvec <- c(proportion = 1, risk = 2.5, year = 6, cash = .15)
+
+direction <- c("==", "<=", "<=", ">=")
+
+aMat <- rbind(proportion = c(1, 1, 1, 1, 1),
+              risk = c(2, 1, 3, 4, 0),
+              year = c(4, 8, 2, 10, 0),
+              cash = c(0, 0, 0, 0, 1))
+
+linprog::solveLP(cvec, bvec, aMat, TRUE, direction, lpSolve = TRUE)
+
+OP(cvec, L_constraint(aMat, direction, bvec), maximum = TRUE) |>
+  ROI_solve() |>
+  solution()
+```
+
+
+# Question 3
+
+You think "business" is the only place that uses optimization? Let's check out an example from medicine. When someone is getting radiation, there are some goals:
+
+1. Destroy the tumor  
+2. Minimize normal tissue damage  
+3. Avoid organs  
+
+While this is done with a few hundred radiation beams, let's try to model it with 2.
+
+We have the following cell types:
+
+- normal tissue (n; what should not be damaged)
+
+- critical tissue (c; think important organ tissue)
+
+- target tissue (t; bad tissue)
+
+- target center (tCenter; the middle of the bad tissue)
+
+```{r, results='asis', echo = FALSE}
+data.frame(area = c("n", "c", "t", "tCenter"), 
+           beam1 = c(.4, .3, .5, .6),
+           beam2 = c(.5, .1, .5, .5), 
+           rules = c("minimize", "<= 2.8", "== 6", ">= 6")) |>
+  stargazer::stargazer(summary = FALSE, header = FALSE)
+```
+
+```{r}
+cvec <- c(beam1 = .4, beam2 = .5)
+
+bvec <- c(critical = 2.8, tumor = 6, tumor_center = 6)
+
+direction <- c("<=", "==", ">=")
+
+aMat <- rbind(critical = c(.3, .1),
+              tumor = c(.5, .5),
+              tumor_center = c(.6, .5))
+
+linprog::solveLP(cvec, bvec, aMat, FALSE, direction, lpSolve = TRUE)
+
+OP(cvec, L_constraint(aMat, direction, bvec), maximum = FALSE) |>
+  ROI_solve() |>
+  solution()
+```
+
+
+# Question 4
+
+You need a team and you have a budget of **objective function value from question 1**. You need to get as many people on your team as possible. You need at least 3 stats people and at most 3 utility people. Given their intense dislike for each other, you can't have Seth and Sharif on the same team.
+
+Seth: utility (150K)    
+Sharif: utility (150K)  
+Martin: utility (150K)  
+David: utility (150K)  
+Brandon: utility (150K)  
+John: utility (250K)  
+
+Francis: stats (150K)  
+Huy: stats (150K)  
+Hong: stats (250K)  
+Zifeng: stats (250K)  
+Junghee: stats (250K)  
+Maggie: stats (250K)  
+Ken: stats (350K)  
+
+Who are you taking?
+
+The big question here is what are we doing? If we want to maximize the number of people on the team, then the c vector is going to just be 1's (every person counts as 1). You have a budget constraint, a stats constraint, and a utility constraint. You've also got to incorporate the S^2 constraint (we both have a 1 on that row of the matrix and the margin has to be less than or equal to 1).
+
+```{r}
+cvec <- rep(1, 13)
+
+bvec <- c(budget = 1880000, 
+          stats = 3, 
+          utility = 3, 
+          ss = 1)
+
+directions <- c("<=", ">=", "<=", "<=")
+
+aMat <- rbind(budget = c(rep(150000, 5), 250000, rep(150000, 2),
+                rep(250000, 4), 350000),
+              stats = c(rep(0, 6), rep(1, 7)),
+              utility = c(rep(1, 6), rep(0, 7)), 
+              ss = c(1, 1, rep(0, 11)))
+
+out <- lpSolve::lp("max", cvec, aMat, directions, bvec, all.bin = TRUE)
+
+people_picked <- out$solution
+
+names(people_picked) <- c("Seth", "Sharif", "Martin", "David", 
+                          "Brandon", "John", "Francis", "Huy",
+                          "Hong", "Zifeng", "Junghee", "Maggie",
+                          "Ken")
+
+people_picked
+
+OP(cvec, L_constraint(aMat, directions, bvec), 
+   types = rep("B", length(cvec)), maximum = TRUE) |>
+  ROI_solve() |>
+  solution() |>
+  setNames(c("Seth", "Sharif", "Martin", "David", 
+                          "Brandon", "John", "Francis", "Huy",
+                          "Hong", "Zifeng", "Junghee", "Maggie",
+                          "Ken"))
+```
+
+Remember that whole "no promise of optimality"? Looking us right in the faces here.
+
+# Question 5
+
+Just down the road from Notre Dame is Elkhart -- the World's RV Capital! While they might not admit it, most of the manufactures use common components. Thor, Jayco, and Fleetwood all get their engines from 1 of 2 Cummins Engine plants. The following table is on the shipping department supervisor's desk. 
+
+```{r, results='asis', echo = FALSE}
+data.frame(Engine_Plants = c("EP_1", "EP_2", "RVs_Needed"), 
+           Thor_shipping = c(40, 14, 300),
+           Jayco_shipping = c(30, 25, 35), 
+           Fleetwood_shipping = c(20, 35, 400),
+           RVs_Needed = c("300", "300", "400")) |>
+  stargazer::stargazer(summary = FALSE, header = FALSE)
+```
+
+Help ship the engines where they are needed, but do it as cheaply as you can. 
+
+If specified correctly, this problem should run into trouble: mostly because there is more demand than inventory. If you get answers with the question as written something might be weird:
+
+```{r}
+cvec <- c(ep1_thor = 40, ep1_jay = 30, ep1_fleet = 20, 
+          ep2_thor = 14, ep2_jay = 25, ep2_fleet = 35)
+
+bvec <- c(ep1_avail = 300, ep2_avail = 300, 
+          thor_demand = 300, jay_demand = 35, fleet_demand = 400)
+
+directions <- c("<=", "<=", "==", "==", "==")
+
+aMatrix <- rbind(ep1_avail = c(1, 1, 1, 0, 0, 0),
+                 ep2_avail = c(0, 0, 0, 1, 1, 1),
+                 thor_demand = c(1, 0, 0, 1, 0, 0),
+                 jay_demand = c(0, 1, 0, 0, 1, 0),
+                 fleet_demand = c(0, 0, 1, 0, 0, 1))
+
+linprog::solveLP(cvec, bvec, aMatrix, FALSE, directions, lpSolve = TRUE)
+```
+
+With only 600 engines available, this model runs into problems with those demand constraints. To get this problem to solve, something has to change.
+
+Now, let's see a more sensible problem and solution. If we bump up the engines available at both plants to 500, and even set our needs a bit higher, we will be in better shape for solving the problem.
+
+```{r, results='asis', echo = FALSE}
+data.frame(Engine_Plants = c("EP_1", "EP_2", "RVs_Needed"), 
+           Thor_shipping = c(40, 15, 300),
+           Jayco_shipping = c(30, 25, 300), 
+           Fleetwood_shipping = c(20, 35, 400),
+           Engines_Avail = c("500", "500", "")) |>
+  stargazer::stargazer(summary = FALSE, header = FALSE)
+```
+
+
+```{r}
+cvec <- c(ep1_thor = 40, ep1_jay = 30, ep1_fleet = 20, 
+          ep2_thor = 15, ep2_jay = 25, ep2_fleet = 35)
+
+bvec <- c(ep1_avail = 500, ep2_avail = 500, 
+          thor_demand = 300, jay_demand = 300, fleet_demand = 400)
+
+directions <- c("<=", "<=", "==", "==", "==")
+
+aMatrix <- rbind(ep1_avail = c(1, 1, 1, 0, 0, 0),
+                 ep2_avail = c(0, 0, 0, 1, 1, 1),
+                 thor_demand = c(1, 0, 0, 1, 0, 0),
+                 jay_demand = c(0, 1, 0, 0, 1, 0),
+                 fleet_demand = c(0, 0, 1, 0, 0, 1))
+
+linprog::solveLP(cvec, bvec, aMatrix, FALSE, directions, lpSolve = TRUE)
+
+OP(cvec, L_constraint(aMatrix, directions, bvec), maximum = FALSE) |>
+  ROI_solve() |>
+  solution()
+```
+

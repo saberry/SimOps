@@ -59,7 +59,7 @@
 <p>“Once their ID has been checked they can meet with one of our bud-tenders – they pick their poison and then pay.”</p>
 <p>Ali was drawing the process out and made sure that it was correct:</p>
 <p>“Seem about right?”, Ali asked.</p>
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rich-iannone/DiagrammeR">DiagrammeR</a></span><span class="op">)</span>
 
 <span class="fu"><a href="https://rdrr.io/pkg/DiagrammeR/man/grViz.html">grViz</a></span><span class="op">(</span><span class="st">"
@@ -76,24 +76,30 @@ digraph {
   A-&gt;B B-&gt;C C-&gt;D D-&gt;E
 }
 "</span><span class="op">)</span></code></pre></div>
-<div id="htmlwidget-ed275361603137f40f33" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-ed275361603137f40f33">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  A [label = \"ID Check Line\"]\n  B [label = \"ID Check\"]\n  C [label = \"Bud Tender Line\"]\n  D [label = \"Bud Tender\"]\n  E [label = \"Pay\"]\n\n  A->B B->C C->D D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>“That’s right”, Rene said.</p>
+<div id="htmlwidget-726395b0ba82ed978aa6" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-726395b0ba82ed978aa6">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  A [label = \"ID Check Line\"]\n  B [label = \"ID Check\"]\n  C [label = \"Bud Tender Line\"]\n  D [label = \"Bud Tender\"]\n  E [label = \"Pay\"]\n\n  A->B B->C C->D D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><p>“That’s right”, Rene said.</p>
 <p>“How many people are checking IDs and how many bud tenders do you have?”, Ali asked.</p>
 <p>“It kinda depends”, Rene said, “but it is usually just one person checking IDs and usually two bud tenders.”</p>
 <p>Ali had one more question: “How long do each of those steps take?”</p>
 <p>“Uhhhhh…I’ll have to ask around and get back with you”, Rene noted.</p>
-<p>“Most excellent”, Ali thought, “that will give me some time to chat with Alex.” Alex was the resident expert of simulations of all kind, so Ali knew an ally was there.</p>
+<p>“Most excellent”, Ali thought, “that will give me some time to chat with Alex.”</p>
 <div id="discrete-event-simulation" class="section level2" number="7.1">
 <h2>
 <span class="header-section-number">7.1</span> Discrete Event Simulation<a class="anchor" aria-label="anchor" href="#discrete-event-simulation"><i class="fas fa-link"></i></a>
 </h2>
-<p>When Ali finally caught up with Alex, Alex was only too happy to share some of the finer points on process simulation.</p>
+<p>When Ali finally caught up with Alex, Alex was only too happy to share some of the finer points on process simulation. First, Alex made note that the particular type of simulation under conversation wasn’t just a process simulation, but was something called <em>discrete event simulation</em> (DES) – events are individual processes and some items goes through a series of those individual processes.</p>
+<p>“It has roots in manufacturing, but some many things in life can be modeled through DES”, Alex said.</p>
+<p>“Let’s start with something horribly boring…lines.”</p>
 </div>
 <div id="queueing-theory" class="section level2" number="7.2">
 <h2>
 <span class="header-section-number">7.2</span> Queueing Theory<a class="anchor" aria-label="anchor" href="#queueing-theory"><i class="fas fa-link"></i></a>
 </h2>
-<p>Queues have their own notation (Kendall’s notation).</p>
+<p>“There is a whole field of study regarding lines”, Alex said, “and it is called <em>queueing theory</em>.”</p>
+<p>“We don’t have to get crazy, but there is this thing called Kendall’s Notation…it just describes the particular parts of how lines form and the distributions that guide them.”</p>
+<p>Ali thought, “The theory of lines…how do some people ever find love.”</p>
+<p>Alex could almost feel Ali’s thought and said, “It really is more interesting than it sounds.”</p>
+<p>“Check this out!”, and Alex was off to the races.</p>
 <p><span class="math inline">\(A/B/C/D\)</span></p>
 <p>Where:</p>
 <p><span class="math inline">\(A = arrival\, process\)</span></p>
@@ -103,12 +109,10 @@ digraph {
 <p><span class="math inline">\(M/D/k\)</span></p>
 <p><span class="math inline">\(M/M/k\)</span></p>
 <p><em>M</em> generally stands for Markov or Exponential</p>
-<aside>
-You might also see <em>M</em> described as being from a Poisson process
-</aside><p><em>D</em> is deterministic: all jobs require a fixed amount of time.</p>
+<p><em>D</em> is deterministic: all jobs require a fixed amount of time.</p>
 <p><em>k</em> is the number of servers/workers/etc.</p>
-<p>Both of these are generally assumed to have an infinite buffer.</p>
-<p>If a queue is <span class="math inline">\(M/D/k\)</span>, we can easily compute some helpful statistics (we don’t need any fancy software to help us).</p>
+<p>“Both of these are generally assumed to have an <strong>infinite queue</strong>…that is important to remember.”</p>
+<p>“If a queue is <span class="math inline">\(M/D/k\)</span>, we can easily compute some helpful statistics.”</p>
 <p><span class="math inline">\(\lambda\)</span> = arrival rate</p>
 <p><span class="math inline">\(\mu\)</span> = service rate</p>
 <p><span class="math inline">\(\rho = \frac{\lambda}{\mu}\)</span> = utilization</p>
@@ -120,73 +124,11 @@ You might also see <em>M</em> described as being from a Poisson process
 <p><span class="math display">\[ \omega = \frac{1}{\mu}+\frac{\rho}{2\mu(1 - \rho)} \]</span></p>
 <p>Average waiting time in queue:</p>
 <p><span class="math display">\[ \omega_Q = \frac{\rho}{2\mu(1 - \rho)} \]</span></p>
+<p>“The equations are not the important part here”, Alex said, “but the idea that the equation captures is critical.”</p>
 </div>
-<div id="distributions" class="section level2" number="7.3">
+<div id="performance" class="section level2" number="7.3">
 <h2>
-<span class="header-section-number">7.3</span> Distributions<a class="anchor" aria-label="anchor" href="#distributions"><i class="fas fa-link"></i></a>
-</h2>
-<div id="normal-distribution" class="section level3" number="7.3.1">
-<h3>
-<span class="header-section-number">7.3.1</span> Normal Distribution<a class="anchor" aria-label="anchor" href="#normal-distribution"><i class="fas fa-link"></i></a>
-</h3>
-<p>For our normal distribution, we know the <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span>.</p>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-26-1.png" width="672"></div>
-<p>Want to test if a variable is normally distributed?</p>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">normal_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">5000</span>, mean <span class="op">=</span> <span class="fl">2.5</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span>
-
-<span class="va">exponential_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span><span class="fl">5000</span>, <span class="fl">2.5</span><span class="op">)</span>
-
-<span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-27-1.png" width="672"></div>
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/qqnorm.html">qqnorm</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-27-2.png" width="672"></div>
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">normal_variable</span><span class="op">)</span></code></pre></div>
-<pre><code>
-    Shapiro-Wilk normality test
-
-data:  normal_variable
-W = 0.99956, p-value = 0.3321</code></pre>
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/stats/shapiro.test.html">shapiro.test</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
-<pre><code>
-    Shapiro-Wilk normality test
-
-data:  exponential_variable
-W = 0.81619, p-value &lt; 2.2e-16</code></pre>
-</div>
-<div id="exponential-distribution" class="section level3" number="7.3.2">
-<h3>
-<span class="header-section-number">7.3.2</span> Exponential Distribution<a class="anchor" aria-label="anchor" href="#exponential-distribution"><i class="fas fa-link"></i></a>
-</h3>
-<p>We can only know one thing about the exponential distribution: <span class="math inline">\(\mu\)</span> (also expressed as a rate).</p>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-28-1.png" width="672"></div>
-<p>Wanna test it?</p>
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">exponential_variable</span><span class="op">)</span></code></pre></div>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-29-1.png" width="672"></div>
-</div>
-<div id="poisson-distribution" class="section level3" number="7.3.3">
-<h3>
-<span class="header-section-number">7.3.3</span> Poisson Distribution<a class="anchor" aria-label="anchor" href="#poisson-distribution"><i class="fas fa-link"></i></a>
-</h3>
-<p>The poisson is an interesting distribution – it tends to deal with count-related variables. It tells us the probability of a count occuring. We know its <span class="math inline">\(\lambda\)</span> (again, a rate).</p>
-<aside><p><span class="math inline">\(\lambda\)</span> is just a fancy way of saying the average number of events, or the incidence rate.</p>
-</aside><div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-30-1.png" width="672"></div>
-</div>
-<div id="uniform-distribution" class="section level3" number="7.3.4">
-<h3>
-<span class="header-section-number">7.3.4</span> Uniform Distribution<a class="anchor" aria-label="anchor" href="#uniform-distribution"><i class="fas fa-link"></i></a>
-</h3>
-<p>While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not – I would say that distinction belongs to the uniform distribution. We don’t even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range.</p>
-<div class="inline-figure"><img src="_main_files/figure-html/unnamed-chunk-31-1.png" width="672"></div>
-</div>
-</div>
-<div id="performance" class="section level2" number="7.4">
-<h2>
-<span class="header-section-number">7.4</span> Performance<a class="anchor" aria-label="anchor" href="#performance"><i class="fas fa-link"></i></a>
+<span class="header-section-number">7.3</span> Performance<a class="anchor" aria-label="anchor" href="#performance"><i class="fas fa-link"></i></a>
 </h2>
 <p>The <em>service level</em> for each simulation is the fraction of the demand that is satisfied.</p>
 <p><span class="math display">\[ Entrance  \: Service \: Level = \frac{Objects \: Entering}{Objects \: Entering + Objects \: Unable \: To \: Enter}\]</span></p>
@@ -198,36 +140,201 @@ W = 0.81619, p-value &lt; 2.2e-16</code></pre>
 You will see different words for lines: buffers and queues. Just know that they are used interchangeably.
 </aside>
 </div>
-<div id="the-dispensary" class="section level2" number="7.5">
+<div id="the-dispensary" class="section level2" number="7.4">
 <h2>
-<span class="header-section-number">7.5</span> The Dispensary<a class="anchor" aria-label="anchor" href="#the-dispensary"><i class="fas fa-link"></i></a>
+<span class="header-section-number">7.4</span> The Dispensary<a class="anchor" aria-label="anchor" href="#the-dispensary"><i class="fas fa-link"></i></a>
 </h2>
-<p>The interarrival times for customers follows an exponential distribution with <span class="math inline">\(\mu = 2 \, minutes\)</span>.</p>
+<p>The interarrival times for customers follows an exponential distribution with a rate of 1 person every 1.5 minutes.</p>
 <p>The dispensary cannot hold any more than 8 people, for safety reasons. If a person arrives when the line is full, that person will not get in line.</p>
-<p>The bud tender’s service time can be approximated by a normal distribution with <span class="math inline">\(\mu = 2.4 \, minutes\)</span> and <span class="math inline">\(\sigma = .5 \, minutes\)</span>.</p>
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rich-iannone/DiagrammeR">DiagrammeR</a></span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/pkg/DiagrammeR/man/grViz.html">grViz</a></span><span class="op">(</span><span class="st">"
+<p>The ID check is approximately normal with <span class="math inline">\(\mu=15 \, seconds\)</span> and <span class="math inline">\(\sigma = 3 \, seconds\)</span>. Once a person has their ID checked, they can sit in the lobby and there are 10 seats in the lobby.</p>
+<p>The bud tender’s service time is <span class="math inline">\(\mu = 2.4 \, minutes\)</span> and <span class="math inline">\(\sigma = .5 \, minutes\)</span>.</p>
+<p>Paying generally follows a uniform distribution, with a minimum of 5 seconds and a maximum of 15 seconds.</p>
+<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/DiagrammeR/man/grViz.html">grViz</a></span><span class="op">(</span><span class="st">"
 digraph {
   graph [overlap = true, fontsize = 10, rankdir = LR]
   
   node [shape = box, style = filled, color = black, fillcolor = aliceblue]
-  
-  A [label = 'Door']
-  B [label = 'Line']
-  C [label = 'Teller 1']
-  D [label = 'Teller 2']
-  E [label = 'Served']
-  
-  A-&gt;B 
-  B-&gt;C
-  B-&gt;D
-  C-&gt;E
-  D-&gt;E
+  A [label = 'ID Check Line']
+  B [label = 'ID Check']
+  C [label = 'Bud Tender Line']
+  D [label = 'Bud Tender']
+  E [label = 'Pay']
+
+  A-&gt;B B-&gt;C C-&gt;D D-&gt;E
 }
 "</span><span class="op">)</span></code></pre></div>
-<div id="htmlwidget-61ebbdb1b62e21665a83" style="width:672px;height:480px;" class="grViz html-widget"></div>
-<script type="application/json" data-for="htmlwidget-61ebbdb1b62e21665a83">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  \n  A [label = \"Door\"]\n  B [label = \"Line\"]\n  C [label = \"Teller 1\"]\n  D [label = \"Teller 2\"]\n  E [label = \"Served\"]\n  \n  A->B \n  B->C\n  B->D\n  C->E\n  D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-dccf80ac8c3a6a09ec9f" style="width:672px;height:480px;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-dccf80ac8c3a6a09ec9f">{"x":{"diagram":"\ndigraph {\n  graph [overlap = true, fontsize = 10, rankdir = LR]\n  \n  node [shape = box, style = filled, color = black, fillcolor = aliceblue]\n  A [label = \"ID Check Line\"]\n  B [label = \"ID Check\"]\n  C [label = \"Bud Tender Line\"]\n  D [label = \"Bud Tender\"]\n  E [label = \"Pay\"]\n\n  A->B B->C C->D D->E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script><div id="classoverflow-3" class="section level3" number="7.4.1">
+<h3>
+<span class="header-section-number">7.4.1</span> ClassOverflow<a class="anchor" aria-label="anchor" href="#classoverflow-3"><i class="fas fa-link"></i></a>
+</h3>
+<p>We will need the <code>simmer</code> package for our simulation:</p>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"simmer"</span><span class="op">)</span></code></pre></div>
+<p>Once we have <code>simmer</code> installed, we need to load it:</p>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://r-simmer.org">simmer</a></span><span class="op">)</span></code></pre></div>
+<p>Let’s start by defining a customer’s trajectory. First, we will provide a name for <code><a href="https://r-simmer.org/reference/trajectory.html">trajectory()</a></code>.</p>
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span></code></pre></div>
+<p>Next, we need to initiate a start time with <code><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute()</a></code> – we will use <code><a href="https://r-simmer.org/reference/now.html">now()</a></code> to specify our not-yet-created dispensary object.</p>
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></code></pre></div>
+<p>After establishing our time, the next step for a customer is to <code><a href="https://r-simmer.org/reference/seize.html">seize()</a></code> the “teller” (which we will define later).</p>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span></code></pre></div>
+<p>Now things start to get tricky. We need to use <code><a href="https://r-simmer.org/reference/timeout.html">timeout()</a></code> to specify how long a customer is using the id check – this is the check’s average working time.</p>
+<p>We can specify how long an id check is seized (i.e., how long the check is working) – we provide a distribution with the appropriate values.</p>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></code></pre></div>
+<p>After a customer spends time with the teller, the customer releases the counter.</p>
+<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span></code></pre></div>
+<p>From there, we can add the additional resources to our model:</p>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">2.4</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, min <span class="op">=</span> <span class="fl">5</span><span class="op">/</span><span class="fl">60</span>, max <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span></code></pre></div>
+<p>This is all we need to do for a customer, so now we can turn our attention to the dispensary.</p>
+<p>Our dispensary is going to provide the environment that houses our trajectory. So, we can start by creating an environment with <code><a href="https://r-simmer.org/reference/simmer.html">simmer()</a></code>:</p>
+<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dispensary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/simmer.html">simmer</a></span><span class="op">(</span><span class="st">"dispensary"</span><span class="op">)</span></code></pre></div>
+<p>Once we have our simulation environment defined, we can add resources to it with the aptly-named <code>add_resources()</code> function. This is where we will specify what is being seized by our customer. We need to provide some additional information to our resource: <code>capacity</code> and <code>queue_size</code>.</p>
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dispensary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/simmer.html">simmer</a></span><span class="op">(</span><span class="st">"dispensary"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"id_check"</span>, capacity <span class="op">=</span> <span class="fl">1</span>, queue_size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"bud_tender"</span>, capacity <span class="op">=</span> <span class="fl">2</span>, queue_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"payment"</span>, capacity <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> </code></pre></div>
+<p>To this point, we have our customer behavior (how they move through our process) and information about our work stations. The last detail is the inter-arrival time, which we can specify with <code><a href="https://r-simmer.org/reference/add_generator.html">add_generator()</a></code>. It works in very much the same way that <code><a href="https://r-simmer.org/reference/timeout.html">timeout()</a></code>, in that we are specifying a distribution. The <code>rexp</code> function in R takes a rate. If we remember that, on average, one person comes into the dispensary every two minutes, we can define our rate as <span class="math inline">\(\frac{1}{2}\)</span>.</p>
+<p>Try this: mean(rexp(n = 10000, rate = 1/2))</p>
+<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">dispensary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/simmer.html">simmer</a></span><span class="op">(</span><span class="st">"dispensary"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"id_check"</span>, capacity <span class="op">=</span> <span class="fl">1</span>, queue_size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"bud_tender"</span>, capacity <span class="op">=</span> <span class="fl">2</span>, queue_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"payment"</span>, capacity <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_generator.html">add_generator</a></span><span class="op">(</span><span class="st">"Customer"</span>, <span class="va">customer</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1.5</span><span class="op">)</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>
+  <span class="op">}</span><span class="op">)</span></code></pre></div>
+<p>Now we can run our simulation; we just need to provide a time value for the <code>until</code> argument. Let’s say we want to run this simulation for 2 hours.</p>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://r-simmer.org/reference/run.html">run</a></span><span class="op">(</span><span class="va">dispensary</span>, until <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></code></pre></div>
+<p>If we put it together, here is what we have:</p>
+<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+  <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">2.4</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, min <span class="op">=</span> <span class="fl">5</span><span class="op">/</span><span class="fl">60</span>, max <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span>
+
+<span class="va">dispensary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/simmer.html">simmer</a></span><span class="op">(</span><span class="st">"dispensary"</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"id_check"</span>, capacity <span class="op">=</span> <span class="fl">1</span>, queue_size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"bud_tender"</span>, capacity <span class="op">=</span> <span class="fl">2</span>, queue_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"payment"</span>, capacity <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> |&gt;
+  <span class="fu"><a href="https://r-simmer.org/reference/add_generator.html">add_generator</a></span><span class="op">(</span><span class="st">"Customer"</span>, <span class="va">customer</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+    <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1.5</span><span class="op">)</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>
+  <span class="op">}</span><span class="op">)</span>
+
+<span class="fu"><a href="https://r-simmer.org/reference/run.html">run</a></span><span class="op">(</span><span class="va">dispensary</span>, until <span class="op">=</span> <span class="fl">120</span><span class="op">)</span></code></pre></div>
+<pre><code>simmer environment: dispensary | now: 120 | next: 121.233775431808
+{ Monitor: in memory }
+{ Resource: id_check | monitored: TRUE | server status: 0(1) | queue status: 0(8) }
+{ Resource: bud_tender | monitored: TRUE | server status: 0(2) | queue status: 0(10) }
+{ Resource: payment | monitored: TRUE | server status: 0(2) | queue status: 0(Inf) }
+{ Source: Customer | monitored: 1 | n_generated: 101 }</code></pre>
+<p>Finally, we can start to look at our data:</p>
+<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/get_mon.html">get_mon_arrivals</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span>
+
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></code></pre></div>
+<pre><code>       name start_time  end_time activity_time finished
+1 Customer0   0.000000  2.672641      2.672641     TRUE
+2 Customer1   5.104560  7.431045      2.326484     TRUE
+3 Customer2   6.380924  8.569099      2.188175     TRUE
+4 Customer3   6.553535  9.985825      2.936768     TRUE
+5 Customer4   6.832939 11.453247      3.193916     TRUE
+6 Customer5  10.032842 13.034799      3.001957     TRUE
+  replication
+1           1
+2           1
+3           1
+4           1
+5           1
+6           1</code></pre>
+<p>Let’s calculate a few things. First, let’s how many people made it through:</p>
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">result</span><span class="op">[</span><span class="va">result</span><span class="op">$</span><span class="va">finished</span> <span class="op">==</span> <span class="cn">TRUE</span>, <span class="op">]</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 82</code></pre>
+<p>Now we can check our service level:</p>
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">result</span><span class="op">[</span><span class="va">result</span><span class="op">$</span><span class="va">finished</span> <span class="op">==</span> <span class="cn">TRUE</span>, <span class="op">]</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 1</code></pre>
+<p>The <code>nrow</code> function will tell us how many rows are in the data. In the numerator, we filtered those rows were finished was equal to TRUE (giving us the number of people who made it into the system).</p>
+<p>Now we need to calculate how long each person was in line.</p>
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">result</span><span class="op">$</span><span class="va">wait_time</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">end_time</span> <span class="op">-</span> <span class="va">result</span><span class="op">$</span><span class="va">start_time</span> <span class="op">-</span> <span class="va">result</span><span class="op">$</span><span class="va">activity_time</span></code></pre></div>
+<p>Now, we can find the average wait time. We only want to do it for those who actually made it into the system though!</p>
+<div class="sourceCode" id="cb95"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">completeOnly</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">[</span><span class="va">result</span><span class="op">$</span><span class="va">finished</span> <span class="op">==</span> <span class="cn">TRUE</span>, <span class="op">]</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">completeOnly</span><span class="op">$</span><span class="va">wait_time</span><span class="op">)</span></code></pre></div>
+<pre><code>[1] 2.557733</code></pre>
+<p>That gives us all of the information that we need for this bank configuration.</p>
+<p>But…that is just one simulation. We really need to run this many times to get an idea about the distribution of outcomes.</p>
+<p>We have a few choices. One choice is that we just replicate our procedure a certain number of times:</p>
+<div class="sourceCode" id="cb97"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sim50Runs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">50</span>, expr <span class="op">=</span> <span class="op">{</span>
+  <span class="va">customer</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/trajectory.html">trajectory</a></span><span class="op">(</span><span class="st">"Customer path"</span><span class="op">)</span> <span class="op">%&gt;%</span> 
+    <span class="fu"><a href="https://r-simmer.org/reference/set_attribute.html">set_attribute</a></span><span class="op">(</span><span class="st">"start_time"</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://r-simmer.org/reference/now.html">now</a></span><span class="op">(</span><span class="va">dispensary</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span>, sd <span class="op">=</span> <span class="fl">3</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"id_check"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">2.4</span>, sd <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"bud_tender"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">seize</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/timeout.html">timeout</a></span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1</span>, min <span class="op">=</span> <span class="fl">5</span><span class="op">/</span><span class="fl">60</span>, max <span class="op">=</span> <span class="fl">15</span><span class="op">/</span><span class="fl">60</span><span class="op">)</span><span class="op">}</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/seize.html">release</a></span><span class="op">(</span><span class="st">"payment"</span><span class="op">)</span>
+  
+  <span class="va">dispensary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/simmer.html">simmer</a></span><span class="op">(</span><span class="st">"dispensary"</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"id_check"</span>, capacity <span class="op">=</span> <span class="fl">1</span>, queue_size <span class="op">=</span> <span class="fl">8</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"bud_tender"</span>, capacity <span class="op">=</span> <span class="fl">2</span>, queue_size <span class="op">=</span> <span class="fl">10</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/add_resource.html">add_resource</a></span><span class="op">(</span><span class="st">"payment"</span>, capacity <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> |&gt;
+    <span class="fu"><a href="https://r-simmer.org/reference/add_generator.html">add_generator</a></span><span class="op">(</span><span class="st">"Customer"</span>, <span class="va">customer</span>, <span class="kw">function</span><span class="op">(</span><span class="op">)</span> <span class="op">{</span>
+      <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">rexp</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">/</span><span class="fl">1.5</span><span class="op">)</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span>
+    <span class="op">}</span><span class="op">)</span>
+  
+  <span class="fu"><a href="https://r-simmer.org/reference/run.html">run</a></span><span class="op">(</span><span class="va">dispensary</span>, until <span class="op">=</span> <span class="fl">120</span><span class="op">)</span>
+  
+  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-simmer.org/reference/get_mon.html">get_mon_arrivals</a></span><span class="op">(</span><span class="va">bank</span><span class="op">)</span>
+  
+<span class="op">}</span>, simplify <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+
+</div>
 </div>
 </div>
   <div class="chapter-nav">
@@ -239,16 +346,10 @@ digraph {
 <li><a class="nav-link" href="#process-simulation"><span class="header-section-number">7</span> Process Simulation</a></li>
 <li><a class="nav-link" href="#discrete-event-simulation"><span class="header-section-number">7.1</span> Discrete Event Simulation</a></li>
 <li><a class="nav-link" href="#queueing-theory"><span class="header-section-number">7.2</span> Queueing Theory</a></li>
+<li><a class="nav-link" href="#performance"><span class="header-section-number">7.3</span> Performance</a></li>
 <li>
-<a class="nav-link" href="#distributions"><span class="header-section-number">7.3</span> Distributions</a><ul class="nav navbar-nav">
-<li><a class="nav-link" href="#normal-distribution"><span class="header-section-number">7.3.1</span> Normal Distribution</a></li>
-<li><a class="nav-link" href="#exponential-distribution"><span class="header-section-number">7.3.2</span> Exponential Distribution</a></li>
-<li><a class="nav-link" href="#poisson-distribution"><span class="header-section-number">7.3.3</span> Poisson Distribution</a></li>
-<li><a class="nav-link" href="#uniform-distribution"><span class="header-section-number">7.3.4</span> Uniform Distribution</a></li>
-</ul>
+<a class="nav-link" href="#the-dispensary"><span class="header-section-number">7.4</span> The Dispensary</a><ul class="nav navbar-nav"><li><a class="nav-link" href="#classoverflow-3"><span class="header-section-number">7.4.1</span> ClassOverflow</a></li></ul>
 </li>
-<li><a class="nav-link" href="#performance"><span class="header-section-number">7.4</span> Performance</a></li>
-<li><a class="nav-link" href="#the-dispensary"><span class="header-section-number">7.5</span> The Dispensary</a></li>
 </ul>
 
       <div class="book-extra">
@@ -265,7 +366,7 @@ digraph {
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

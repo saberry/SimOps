@@ -14,6 +14,7 @@ constraintMargins <- as.matrix(advert[-c(dropCost), "demographic_total"])
 constraintMatrix <- as.matrix(advert[-c(dropCost), -c(dropDemos)])
 
 n <- length(objectiveFunction)
+v <- objectiveFunction
 
 library(ompr)
 library(ompr.roi)

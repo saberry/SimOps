@@ -270,8 +270,8 @@ S batch_need    0.000    0  -50.00000   Inf 50.00000      Inf</code></pre>
 <p>After sending an updated solution to Bao, Ali felt some sense of relief – learning was happening and solutions were getting easier to come by. Unfortunately for Ali, stories of success spread wildly and it wasn’t long until more people came knocking. The first request was from Castel, the director of grow operations; the second request was from Blaise, the director of Human Resources.</p>
 <p>Castel’s problem seemed pretty simple: there are greenhouses that contain raw product and that raw product needs to be shipped to different processing facilities. Each processing facility has a capacity need and there is a cost for moving products between the different facilities:</p>
 <p>Castel drew a map for the cost to move product between greenhouses and processing facilities:</p>
-<div id="htmlwidget-0305ad5afb3e3f6affb0" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
-<script type="application/json" data-for="htmlwidget-0305ad5afb3e3f6affb0">{"x":{"nodes":{"id":[1,2,3,4,5,6,7],"shape":["triangle","triangle","triangle","square","square","square","square"],"label":["greenhouse_1","greenhouse_2","greenhouse_3","processing_1","processing_2","processing_3","processing_4"]},"edges":{"from":[1,1,1,1,2,2,2,2,3,3,3,3],"to":[4,5,6,7,4,5,6,7,4,5,6,7],"label":["35","30","40","32","37","40","42","25","40","15","20","28"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":"to"},"layout":{"improvedLayout":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script><p>And then added the following notes:</p>
+<div id="htmlwidget-79ecf814790eaa2becf6" style="width:672px;height:480px;" class="visNetwork html-widget"></div>
+<script type="application/json" data-for="htmlwidget-79ecf814790eaa2becf6">{"x":{"nodes":{"id":[1,2,3,4,5,6,7],"shape":["triangle","triangle","triangle","square","square","square","square"],"label":["greenhouse_1","greenhouse_2","greenhouse_3","processing_1","processing_2","processing_3","processing_4"]},"edges":{"from":[1,1,1,1,2,2,2,2,3,3,3,3],"to":[4,5,6,7,4,5,6,7,4,5,6,7],"label":["35","30","40","32","37","40","42","25","40","15","20","28"]},"nodesToDataframe":true,"edgesToDataframe":true,"options":{"width":"100%","height":"100%","nodes":{"shape":"dot"},"manipulation":{"enabled":false},"edges":{"arrows":"to"},"layout":{"improvedLayout":true}},"groups":null,"width":null,"height":null,"idselection":{"enabled":false},"byselection":{"enabled":false},"main":null,"submain":null,"footer":null,"background":"rgba(0, 0, 0, 0)"},"evals":[],"jsHooks":[]}</script><p>And then added the following notes:</p>
 <blockquote>
 <p>Greenhouse 1 can only contribute 1200 pounds</p>
 </blockquote>
@@ -465,12 +465,14 @@ INTEGER OPTIMAL SOLUTION FOUND
 
 <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
-<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
-              6               0               0               0 
-     white_fire              j1      hammerhead           sista 
-              1               0               0               0 
-         goblin       fishermen           cloud        paradise 
-              0               0               0               0 </code></pre>
+<pre><code>cannabis_caviar          oracle  fruity_pebbles 
+              6               0               0 
+     loud_dream      white_fire              j1 
+              0               1               0 
+     hammerhead           sista          goblin 
+              0               0               0 
+      fishermen           cloud        paradise 
+              0               0               0 </code></pre>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
 <pre><code>[1] 5300</code></pre>
@@ -485,12 +487,14 @@ INTEGER OPTIMAL SOLUTION FOUND
 
 <span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span><span class="op">)</span> |&gt; 
   <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span><span class="va">special_items</span><span class="op">$</span><span class="va">item</span><span class="op">)</span></code></pre></div>
-<pre><code>cannabis_caviar          oracle  fruity_pebbles      loud_dream 
-              0               1               1               0 
-     white_fire              j1      hammerhead           sista 
-              1               0               0               1 
-         goblin       fishermen           cloud        paradise 
-              0               0               0               1 </code></pre>
+<pre><code>cannabis_caviar          oracle  fruity_pebbles 
+              0               1               1 
+     loud_dream      white_fire              j1 
+              0               1               0 
+     hammerhead           sista          goblin 
+              0               1               0 
+      fishermen           cloud        paradise 
+              0               0               1 </code></pre>
 <div class="sourceCode" id="cb55"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/pkg/ROI/man/solution.html">solution</a></span><span class="op">(</span><span class="va">solved_model</span>, <span class="st">"objval"</span><span class="op">)</span></code></pre></div>
 <pre><code>[1] 4550</code></pre>
@@ -525,7 +529,7 @@ INTEGER OPTIMAL SOLUTION FOUND
 <footer class="bg-primary text-light mt-5"><div class="container"><div class="row">
 
   <div class="col-12 col-md-6 mt-3">
-    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-04.</p>
+    <p>"<strong>Simulation and Optimization</strong>" was written by Seth Berry. It was last built on 2021-09-13.</p>
   </div>
 
   <div class="col-12 col-md-6 mt-3">

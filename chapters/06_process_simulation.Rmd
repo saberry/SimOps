@@ -45,7 +45,7 @@ Ali had one more question: "How long do each of those steps take?"
 
 "Uhhhhh...I'll have to ask around and get back with you", Rene noted.
 
-"Most excellent", Ali thought, "that will give me some time to chat with Alex." Alex was the resident expert of simulations of all kind, so Ali knew an ally was there. 
+"Most excellent", Ali thought, "that will give me some time to chat with Alex." 
 
 ## Discrete Event Simulation
 
@@ -116,135 +116,6 @@ Average waiting time in queue:
 $$ \omega_Q = \frac{\rho}{2\mu(1 - \rho)} $$
 
 "The equations are not the important part here", Alex said, "but the idea that the equation captures is critical."
-
-## Distributions
-
-"Distributions drive every single part of DES -- every event that you can ever imagine comes from some type of distribution."
-
-### Normal Distribution
-
-"For our normal distribution, we know the $\mu$ and $\sigma$."
-
-"It is definitely the most common and you'll find that a lot of processes are normally distributed."
-
-```{r, echo = FALSE}
-library(dplyr)
-
-library(ggplot2)
-
-# Why are you looking at my non-echo code? This is private work
-# and you should feel bad for looking here.
-# Comment jokes aside, you are going to see this chunk of 
-# code repeated a few times, but with different 
-# distributions. The data frame part is where we 
-# create the data and then we pass it along to ggplot
-
-data.frame(x = rnorm(10000, mean = 2.5, sd = .5)) |>
-  # We will pass our data to ggplot, where
-  # we set the aesthetic (what's on the x and y).
-  # You'll notice we use the ..density.. 
-  # shortcut to just put the density estimate
-  # across the y.
-  ggplot(aes(x = x, y = ..density..)) +
-  # Just putting those into a histogram
-  geom_histogram(color = "black", fill = "white", bins = 15) +
-  # And then putting the density line over the top
-  geom_density(color = "#ff5500", size = 1.25) +
-  theme_minimal() +
-  labs(x = "Call Center Wait Times", y = "Frequency")
-```
-
-"You might get process data and want to test if a variable is normally distributed."
-
-```{r}
-# Just creating data from a normal distribution:
- 
-normal_variable <- rnorm(n = 5000, mean = 2.5, sd = .5)
-
-# And an exponential distribution:
- 
-exponential_variable <- rexp(n = 5000, rate = 2.5)
-
-# We can check both with a qq plot for normality:
-qqnorm(normal_variable)
-qqnorm(exponential_variable)
-
-# You'll notice the normal distribution 
-# just plots a straight, diagonal line.
-
-# The shapiro test will give a test statistic:
-shapiro.test(normal_variable)
-shapiro.test(exponential_variable)
-
-# An insignificant p-value would indicate 
-# no difference from normality.
-```
-
-
-
-### Exponential Distribution
-
-"We can only know one thing about the exponential distribution: $\mu$ (also expressed as a rate)."
-
-"Just about any arrival process can be approximated by an exponential distribution."
-
-```{r, echo = FALSE}
-data.frame(x = rexp(n = 10000, rate = 2.5)) |>
-  ggplot(aes(x = x)) +
-  geom_histogram(color = "black", fill = "white", bins = 15) +
-  theme_minimal() +
-  labs(x = "Call Center Arrival Times", y = "Frequency")
-```
-
-"Wanna test it?"
-
-```{r}
-hist(exponential_variable)
-```
-
-"That rate parameter is a bit confusion...the easiest way to express it is as a ratio."
-
-"If 3 people enter the line every minute and a half, than it would be a rate of 3/1.5".
-
-```{r}
-hist(rexp(n = 10000, rate = 3 / 1.5))
-```
-
-"You could also just put the average rate in."
-
-```{r}
-hist(rexp(n = 10000, rate = 2))
-```
-
-"They are really the same thing."
-
-### Poisson Distribution
-
-"The poisson is an interesting distribution -- it tends to deal with count-related variables. It tells us the probability of a count occurring.  We know its $\lambda$ (again, a rate)."
-
-"The $\lambda$ is just a fancy way of saying the average number of events, or the incidence rate."
-
-
-```{r, echo = FALSE}
-data.frame(x = rpois(10000, lambda = 4)) |>
-  ggplot(aes(x = x)) +
-  geom_bar(color = "black", fill = "white") +
-  theme_minimal() +
-  labs(x = "Customers In Line", y = "Frequency")
-```
-
-### Uniform Distribution
-
-"While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not -- I would say that distinction belongs to the uniform distribution. We don't even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range."
-
-```{r, echo = FALSE}
-data.frame(x = runif(10000, min = 1, max = 10)) |>
-  round() |>
-  ggplot(aes(x = x)) +
-  geom_bar(color = "black", fill = "white") +
-  theme_minimal() +
-  labs(x = "Customers In Line", y = "Frequency")
-```
 
 ## Performance
 

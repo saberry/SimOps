@@ -160,6 +160,12 @@ data.frame(x = rpois(10000, lambda = 4)) |>
   labs(x = "Dead plants", y = "Frequency")
 ```
 
+"Interestingly, the Poisson distribution has a relationship with the Exponential distribution: Poisson deals with the number of occurrences and the Exponential deals with the time between occurrences."
+
+"Whoa...I've got a lot to learn here.", Ali mumbled.
+
+"All with time!", Alex reassured.
+
 ### Uniform Distribution
 
 "While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not -- I would say that distinction belongs to the uniform distribution. We don't even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range."
@@ -177,7 +183,7 @@ data.frame(x = runif(10000, min = 1, max = 5)) |>
 
 "For sure!", Ali replied, and went off to find Alex.
 
-## An Arguement
+## An Important Distinction
 
 As soon as Ali started talking to Alex, a tangent started. "First and foremost, I want to set you straight on something: simulation is not what-if analysis." 
 
@@ -250,6 +256,151 @@ hist(tri_sum)
 "Is the average wildly different?", Alex asked.
 
 "Nope!", Ali said, "but that is a much better representation of what we would expect!"
+
+"Using distributions is always the way to go.", Alex said. 
+
+"Shashi said something like that.", Ali replied.
+
+"Things become even more interesting as we start to incorporate more distributions into our problems.", Alex smiled as he began typing.
+
+"I'm sure Shashi showed you the exponential distribution", Alex continued, "so let me show you what we can do with it."
+
+"Let's say that our stores get raw product shipments at a rate of 1 every 3 days, on average."
+
+```{r}
+interarrival_time <- rexp(100, rate = 1/3)
+```
+
+"Now, let's say that the average shipment follows a normal distribution, with a mean of 2 pounds and a standard deviation of .5 pounds."
+
+```{r}
+shipment_pounds <- rnorm(100, mean = 2, sd = .5)
+```
+
+"I think I'm following you.", Ali nodded along.
+
+Alex continued, "Let's just program something small."
+
+"I'd be curious to know how many days it would take to get 100 shipments and how much total weight we would get."
+
+"We will start by creating day 1 in the simulation:"
+
+```{r}
+day <- 1
+```
+
+"And our starting pounds."
+
+```{r}
+total_pounds_delivered <- 0
+```
+
+"Next we can specify how many shipments we would like to test this over."
+
+```{r}
+n_shipments <- 100
+```
+
+"Finally, we need to use a `for` loop to iterate over those 100 shipments."
+
+```{r}
+for(i in 1:n_shipments) {
+  # For every shipment, we want to generate 1 draw from
+  # the normal distribution.
+  shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+  
+  # We also want to generate the rate at which
+  # the shipments will arrive.
+  interarrival_time <- rexp(1, rate = 1/3)
+  
+  # Now we can add the shipped pounds to our total_pounds_delivered.
+  # This will update total_pounds_delivered at every iteration.
+  total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+  
+  # And the same idea is used for keeping track of the days.
+  day <- day + interarrival_time
+}
+```
+
+"Let's see those results!"
+
+```{r}
+day
+
+total_pounds_delivered
+```
+
+"So it would take us about `r round(day)` days to get 100 shipments and we would get about `r round(total_pounds_delivered)`.", Alex noted.
+
+"That is absolutely awesome!", Ali gasped. "It is like we are programming the real world."
+
+"That's right.", Alex nodded. "You are only limited by what you can program."
+
+"I've got one more thing to show you...how to repeat the process."
+
+"All we need to do is to take our complete code:"
+
+```{r, eval = FALSE}
+ day <- 1
+  
+  total_pounds_delivered <- 0
+  
+  n_shipments <- 100
+  
+  for(i in 1:n_shipments) {
+    
+    shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+    
+    interarrival_time <- rexp(1, rate = 1/3)
+    
+    total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+    
+    day <- day + interarrival_time
+  }
+```
+
+"And then throw that into the replicate function!"
+
+```{r}
+reps_100 <- replicate(n = 1000, expr = {
+  day <- 1
+  
+  total_pounds_delivered <- 0
+  
+  n_shipments <- 100
+  
+  for(i in 1:n_shipments) {
+    
+    shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+    
+    interarrival_time <- rexp(1, rate = 1/3)
+    
+    total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+    
+    day <- day + interarrival_time
+  }
+  
+  # This is the only different part; I am just taking my results
+  # and throwing them into a data frame. That way, I am always
+  # returning a data frame!
+  results <- data.frame(days = day,
+                        total_pounds = total_pounds_delivered)
+  
+  results
+}, simplify = TRUE)
+```
+
+"After that runs, `reps_100` will be a weird-looking object, but we can still use it for some histograms."
+
+"We need to refer to the row names of `days` and `total_pounds` to extract the rows out and then `unlist` those rows into a vector:
+
+```{r}
+hist(unlist(reps_100["days",]))
+
+hist(unlist(reps_100["total_pounds",]))
+```
+
+Ali was in awe: "That is coolest thing I've seen."
 
 ## ClassOverflow
 

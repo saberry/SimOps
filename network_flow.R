@@ -1,34 +1,50 @@
-flow_data <- data.frame(from = c(1,1,1,2,2,3,4,4,5,6), 
-                        to = c(2,3,4,4,7,5,5,6,7,7), 
-                        ID = 1:10, 
-                        cost = c(3,1,7,2,6,10,1,1,4,4))
+#################
+### Flow Data ###
+### Two Ways  ###
+#################
 
-all_nodes <- c(flow_data$from, flow_data$to) |> 
-  unique()
+# To this point, we have mostly lived in the world of
+# creating objects that reflect our problem. While we 
+# did do some manipulation with the advertising data
+# it wasn't complex -- you will look back at that
+# code within a month and find that it is suddenly
+# much clearer to you.
 
-node_flow_complete <- matrix(0, ncol = nrow(flow_data), 
-                             nrow = length(all_nodes), 
-                             dimnames = list(all_nodes, 
-                                             flow_data$ID))
+# Let's consider something graphically:
 
-for(i in all_nodes) {
-  input_node <- flow_data$ID[flow_data$to == i]
+install.packages("DiagrammeR")
+
+library(DiagrammeR)
+library(ROI)
+library(ROI.plugin.glpk)
+
+grViz("
+digraph {
+  graph [overlap = true, fontsize = 10, rankdir = LR]
   
-  output_node <- flow_data$ID[flow_data$from == i]
-  
-  node_flow_complete[rownames(node_flow_complete)  == i, 
-                     colnames(node_flow_complete) %in% input_node] <- 1
-  
-  node_flow_complete[rownames(node_flow_complete) == i, 
-                     colnames(node_flow_complete) %in% output_node] <- -1
-  
+  node [shape = box, style = filled, color = black, fillcolor = aliceblue]
+  A [label = '1']
+  B [label = '2']
+  C [label = '3']
+  D [label = '4']
+  E [label = '5']
+  F [label = '6']
+  G [label = '7']
+
+  A->B [label = ' 3']
+  A->C [label = ' 1']
+  A->D [label = ' 7']
+  B->D [label = ' 2']
+  B->G [label = ' 6']
+  C->E [label = ' 10']
+  D->E [label = ' 1']
+  D->F [label = ' 1']
+  E->G [label = ' 4']
+  F->G [label = ' 4']
 }
+")
 
-node_flow_complete
-
-dimnames(node_flow_complete) <- list(paste0("node_", all_nodes), 
-               paste0("from_", flow_data$from, 
-                      "_to_", flow_data$to))
+# We can create the vectors/matrices as per normal:
 
 cvec <- c(var1_2 = 3, 
           var1_3 = 1, 
@@ -65,9 +81,51 @@ names(test$solution) <- names(cvec)
 
 test$solution
 
-edgelist <- data.frame(
-  from = c(1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8),
-  to = c(2, 3, 4, 5, 6, 4, 5, 6, 7, 8, 7, 8, 7, 8, 9, 9),
-  ID = seq(1, 16, 1),
-  capacity = c(20, 30, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99, 99),
-  cost = c(0, 0, 1, 2, 3, 4, 3, 2, 3, 2, 3, 4, 5, 6, 0, 0))
+# Let's make a new assumption: we actually
+# have something that resembles data.
+
+flow_data <- data.frame(from = c(1,1,1,2,2,3,4,4,5,6), 
+                        to = c(2,3,4,4,7,5,5,6,7,7), 
+                        ID = 1:10, 
+                        cost = c(3,1,7,2,6,10,1,1,4,4))
+
+# We can spin up some code to make life easier:
+
+all_nodes <- c(flow_data$from, flow_data$to) |> 
+  unique()
+
+node_flow_complete <- matrix(0, ncol = nrow(flow_data), 
+                             nrow = length(all_nodes), 
+                             dimnames = list(all_nodes, 
+                                             flow_data$ID))
+
+for(i in all_nodes) {
+  input_node <- flow_data$ID[flow_data$to == i]
+  
+  output_node <- flow_data$ID[flow_data$from == i]
+  
+  node_flow_complete[rownames(node_flow_complete)  == i, 
+                     colnames(node_flow_complete) %in% input_node] <- 1
+  
+  node_flow_complete[rownames(node_flow_complete) == i, 
+                     colnames(node_flow_complete) %in% output_node] <- -1
+  
+}
+
+node_flow_complete
+
+dimnames(node_flow_complete) <- list(paste0("node_", all_nodes), 
+               paste0("from_", flow_data$from, 
+                      "_to_", flow_data$to))
+
+node_flow_complete
+
+model_create <- OP(objective = flow_data$cost, # Notice anything cool?
+                   constraints = L_constraint(node_flow_complete, 
+                                              rep("==", 7), 
+                                              c(-1, rep(0, 5), 1)), 
+                   maximum = FALSE)
+
+model_solve <- ROI_solve(model_create)
+
+solution(model_solve)

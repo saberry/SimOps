@@ -465,7 +465,7 @@ completeOnly <- result[result$finished == TRUE, ]
 mean(completeOnly$wait_time)
 ```
 
-That gives us all of the information that we need for this bank configuration.
+That gives us all of the information that we need for this dispensary configuration.
 
 But...that is just one simulation. We really need to run this many times to get an idea about the distribution of outcomes.
 
@@ -495,7 +495,296 @@ sim50Runs <- replicate(50, expr = {
   
   run(dispensary, until = 120)
   
-  result <- get_mon_arrivals(bank)
+  result <- get_mon_arrivals(dispensary)
   
 }, simplify = FALSE)
+```
+
+We can extend this idea into something a bit more complex:
+
+```{r}
+purrr::map_df(1:100, ~{
+  customer <- trajectory("Customer path") %>% 
+    set_attribute("start_time", function() {now(dispensary)}) |>
+    seize("id_check") |>
+    timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+    release("id_check") |>
+    seize("bud_tender") |>
+    timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
+    release("bud_tender") |>
+    seize("payment") |>
+    timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+    release("payment")
+  
+  dispensary <- simmer("dispensary") |>
+    add_resource("id_check", capacity = 1, queue_size = 8) |>
+    add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+    add_resource("payment", capacity = 2) |>
+    add_generator("Customer", customer, function() {
+      c(0, rexp(n = 100, rate = 1/1.5), -1)
+    })
+  
+  run(dispensary, until = 120)
+  
+  result <- get_mon_arrivals(dispensary)
+  
+  result$run <- .x
+  
+  result
+})
+```
+
+Next, we can see what things might look like if we change parts of the process:
+
+```{r}
+purrr::map2_df(.x = 1:100, .y = runif(100, min = 1, max = 2), ~{
+    customer <- trajectory("Customer path") %>% 
+    set_attribute("start_time", function() {now(dispensary)}) |>
+    seize("id_check") |>
+    timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+    release("id_check") |>
+    seize("bud_tender") |>
+    timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
+    release("bud_tender") |>
+    seize("payment") |>
+    timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+    release("payment")
+  
+  dispensary <- simmer("dispensary") |>
+    add_resource("id_check", capacity = 1, queue_size = 8) |>
+    add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+    add_resource("payment", capacity = 2) |>
+    add_generator("Customer", customer, function() {
+      c(0, rexp(n = 100, rate = 1/.y), -1)
+    })
+  
+  run(dispensary, until = 120)
+  
+  result <- get_mon_arrivals(dispensary)
+  
+  result$run <- .x
+  
+  result$arrival <- .y
+  
+  result
+})
+```
+
+And a function to show:
+
+```{r}
+employee_change_mod <- purrr::map2_df(.x = 1:100, .y = sample(1:3, 100, TRUE, c(.1, .7, .2)), ~{
+  customer <- trajectory("Customer path") %>% 
+    set_attribute("start_time", function() {now(dispensary)}) |>
+    seize("id_check") |>
+    timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+    release("id_check") |>
+    branch(function() {sample(1:2, 1, prob = c(.8, .2))}, 
+           # The "continue" indicates if the branches should continue through
+           # the trajectory once the branch trajectory is completed.
+           continue = c(TRUE, TRUE), 
+           trajectory() %>%
+             seize("bud_tender") |>
+             timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
+             release("bud_tender"), 
+           trajectory() |> 
+             seize("devices") |>  
+             timeout(function() {rnorm(1, 5, 1)}) |>  
+             release("devices")) |>
+    seize("payment") |>
+    timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+    release("payment")
+  
+  dispensary <- simmer("dispensary") |>
+    add_resource("id_check", capacity = 1, queue_size = 8) |>
+    add_resource("bud_tender", capacity = .y, queue_size = 10) |>
+    add_resource("devices", capacity = 1, queue_size = 10) |> 
+    add_resource("payment", capacity = 2) |>
+    add_generator("Customer", customer, function() {
+      c(0, rexp(n = 100, rate = 1/.y), -1)
+    })
+  
+  run(dispensary, until = 120)
+  
+  result <- get_mon_arrivals(dispensary)
+  
+  result$run <- .x
+  
+  result$employees <- .y
+  
+  result
+})
+
+sapply(split(employee_change_mod, employee_change_mod$employees), function(x) {
+  finished <- x[x$finished == TRUE, ]
+  nrow(finished) / nrow(x)
+})
+
+employee_change_mod$cycleTime <- employee_change_mod$end_time - employee_change_mod$start_time
+
+aggregate(employee_change_mod$cycleTime, 
+          by = list(employee_change_mod$employees), 
+          mean)
+
+library(ggplot2)
+
+ggplot(employee_change_mod, aes(cycleTime)) +
+  geom_histogram(bins = 10) +
+  facet_wrap(vars(employees)) +
+  theme_minimal()
+```
+
+
+### Something Silly
+
+```{r}
+library(parallel)
+
+cl <- makeCluster(detectCores() - 1)
+
+clusterEvalQ(cl, library(simmer))
+
+allResults = parLapply(cl, seq(1:50), function(the_seed) {
+ customer <- trajectory("Customer path") %>% 
+    set_attribute("start_time", function() {now(dispensary)}) |>
+    seize("id_check") |>
+    timeout(function() {rnorm(n = 1, mean = 15/60, sd = 3/60)}) |>
+    release("id_check") |>
+    seize("bud_tender") |>
+    timeout(function() {rnorm(n = 1, mean = 2.4, sd = .5)}) |>
+    release("bud_tender") |>
+    seize("payment") |>
+    timeout(function() {runif(n = 1, min = 5/60, max = 15/60)}) |>
+    release("payment")
+  
+  dispensary <- simmer("dispensary") |>
+    add_resource("id_check", capacity = 1, queue_size = 8) |>
+    add_resource("bud_tender", capacity = 2, queue_size = 10) |>
+    add_resource("payment", capacity = 2) |>
+    add_generator("Customer", customer, function() {
+      c(0, rexp(n = 100, rate = 1/1.5), -1)
+    })
+  
+  run(dispensary, until = 120)
+  
+  result <- get_mon_arrivals(dispensary)
+  
+  result$run <- the_seed
+  
+  result
+  
+})
+
+stopCluster(cl)
+
+```
+
+
+
+
+## Manufacturing
+
+In manufacturing, one of the more important metrics we deal with is *throughput* (the total number of units produced). 
+
+Variability, while not something we can always measure/predict, can come from a few sources.
+
+- Machine/worker processing times
+
+- Output quality
+
+- Demand
+
+- Supply
+
+Controlling variability can help to increase throughput.
+
+### An Example
+
+- In a factory, we have five work stations arranged in a line (WS1 through WS5).
+
+- Each work station is a machine with one operator.
+
+  - WS1 (bandsaw): $\mu = 10;\sigma = 1$ (normal)
+  
+  - WS2 (contouring): $\mu = 5;\sigma = 2$ (normal)
+  
+  - WS3 (rough sanding): $min = 5;max = 15$ (uniform)
+  
+  - WS4 (finish sanding): $min = 10;max = 15$ (uniform)
+  
+  - WS5 (finish): $\mu = 10;\sigma = 2.5$ (normal)
+
+- The work stations process one product that must move sequentially.
+
+- Each work station has its own processing time.
+
+- Product cannot be *stacked*
+
+  - If WS3 has finished a unit, it cannot be passed onto WS4 if WS4 is still working on a product.
+  
+- We are looking at an 8 hour shift.
+
+### Improvements
+
+What can we do to improve our throughput?
+
+```{r, echo = TRUE}
+library(simmer.plot)
+make_parts <- trajectory("parts") %>% 
+  set_attribute("start_time", function() {now(machineShop)}) %>% 
+  seize("machine1") %>% 
+  timeout(function() {rnorm(n = 1, mean = 10, sd = 1)}) %>% 
+  release("machine1") %>% 
+  seize("machine2", continue = FALSE, 
+        reject = trajectory() %>%
+          timeout(1) %>%
+          rollback(amount = 2, times = Inf)) %>% 
+  timeout(function() {rnorm(n = 1, mean = 5, sd = 2)}) %>% 
+  release("machine2") %>% 
+  seize("machine3", continue = FALSE, 
+        reject = trajectory() %>%
+          timeout(1) %>%
+          rollback(amount = 2, times = Inf)) %>% 
+  timeout(function() {runif(n = 1, min = 5, max = 15)}) %>% 
+  release("machine3") %>% 
+  seize("machine4", continue = FALSE, 
+        reject = trajectory() %>%
+          timeout(1) %>%
+          rollback(amount = 2, times = Inf)) %>% 
+  timeout(function() {runif(n = 1, min = 10, max = 15)}) %>% 
+  release("machine4") %>% 
+  seize("machine5", continue = FALSE, 
+        reject = trajectory() %>%
+          timeout(1) %>%
+          rollback(amount = 2, times = Inf)) %>% 
+  timeout(function() {rnorm(n = 1, mean = 10, sd = 2.5)}) %>% 
+  release("machine5")
+
+machineShop <- simmer("machineShop") %>% 
+  add_resource("machine1", capacity = 1, queue_size = 1) %>%
+  add_resource("machine2", capacity = 1, queue_size = 1) %>% 
+  add_resource("machine3", capacity = 1, queue_size = 1) %>% 
+  add_resource("machine4", capacity = 1, queue_size = 1) %>% 
+  add_resource("machine5", capacity = 1, queue_size = 1) %>% 
+  add_generator("part", make_parts, mon = 1, function() {c(0, rexp(1000, 1/.5), -1)})  
+
+run(machineShop, 480)
+
+result <- get_mon_arrivals(machineShop)
+
+resourceResult <- get_mon_resources(machineShop)
+
+plot(result, metric = "activity_time") +
+  theme_minimal()
+
+plot(result, metric = "waiting_time") +
+  theme_minimal()
+
+plot(resourceResult, metric="usage") +
+  theme_minimal()
+
+plot(resourceResult, metric="utilization") +
+  theme_minimal()
+
+sum(result$finished[result$finished == TRUE])
 ```

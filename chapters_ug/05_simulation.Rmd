@@ -1,15 +1,407 @@
 # Simulation
 
-Why are you looking this far ahead? 
+Ali was hearing a lot of people talk about "what if" scenarios and frankly, the requests for new work was coming in too fast. After dealing with marketing and retail problems, they would keep coming back to ask more questions. "What if we would purchase this many items?", Boa and Blaise both asked. Even Castel was asking for information when the greenhouse situations would change. It seemed like Ali really needed to turn all of the code into functions...but a thought started chewing away at Ali brain. 
 
-Focus on the present instead.
+"What if all of those things are just variables from different distributions". 
 
-<!-- Programming the world around you. -->
+"If I know the past, I can figure out the distribution, and spin up some tables". 
 
-<!-- ## Problems -->
+The final straw was this email from Chaman, the head of grow operations:
 
-<!-- ## Theory -->
+> Good afternoon Ali,  
+We have an interesting problem in our grow operations right now. Our plants are very successful, but a new strain isn't really behaving how we would expect, given the expected probability of full maturation. Nearly 99.9% of these plants live and the maturation cycle runs about 65 days. We started with a 1000 plants on our last run, but we only ended up with 750 plants at the end of the growing cycle. We also had some weird pump failures; we'd think it would only happen about 1/100 times. Realistically, how many times would something like this happen? Better said, is 750 the best we can get with 1000 plants?
+Thanks for the help,  
+Chaman
 
-<!-- ## Application -->
+Ali knew that two other analysts might be able to offer some insight: Shashi knew everything statistical and Alex was the simulation wizard.
 
-<!-- ## Additional Resources -->
+Starting at the beginning is always important, so Ali swung by Shashi's cubicle.
+
+## Distributions
+
+"You were right to come to me first", Shashi said, "I'll fill you in on a few distributions that might be helpful to you."
+
+"Distributions drive every single part of simulation -- every event that you can ever imagine comes from some type of distribution.", Shashi said. 
+
+### Normal Distribution
+
+"For our normal distribution, we know the $\mu$ and $\sigma$."
+
+"It is likely the most common and you'll find that a lot of processes are normally distributed."
+
+```{r, echo = FALSE}
+library(dplyr)
+
+library(ggplot2)
+
+# Why are you looking at my non-echo code? This is private work
+# and you should feel bad for looking here.
+# Comment jokes aside, you are going to see this chunk of 
+# code repeated a few times, but with different 
+# distributions. The data frame part is where we 
+# create the data and then we pass it along to ggplot
+
+data.frame(x = rnorm(10000, mean = 2.5, sd = .5)) |>
+  # We will pass our data to ggplot, where
+  # we set the aesthetic (what's on the x and y).
+  # You'll notice we use the ..density.. 
+  # shortcut to just put the density estimate
+  # across the y.
+  ggplot(aes(x = x, y = ..density..)) +
+  # Just putting those into a histogram
+  geom_histogram(color = "black", fill = "white", bins = 15) +
+  # And then putting the density line over the top
+  geom_density(color = "#ff5500", size = 1.25) +
+  theme_minimal() +
+  labs(x = "Customer Wait Times", y = "Frequency")
+```
+
+"You might get customer data and want to test if a variable is normally distributed."
+
+"Let's start by creating a normal distribution."
+
+```{r}
+normal_variable <- rnorm(n = 5000, mean = 2.5, sd = .5)
+```
+
+"And an exponential distribution...I'll tell you more about that in a few minutes."
+
+```{r}
+exponential_variable <- rexp(n = 5000, rate = 2.5)
+```
+
+"We can check both with a qq plot for normality."
+
+```{r}
+qqnorm(normal_variable)
+qqnorm(exponential_variable)
+```
+
+"The normal distribution will follow the diagonal perfectly, but the exponential looks like it curves down".
+
+"If you ever want to test for the normal distribution, you can just use the Shapiro test."
+
+```{r}
+shapiro.test(normal_variable)
+shapiro.test(exponential_variable)
+```
+
+"Think about it like this", Shashi said, "We are trying to test if our observed distribution is significantly different than a normal distribution." 
+
+"We would want to see a *p*-value above .05 to suggest that we might be dealing with a normally-distributed variable."
+
+"Clearly, the exponential distribution is significantly different."
+
+"That is awesome!", Ali said.
+
+### Binomial Distribution
+
+"Anything that has two outcomes -- dead/alive, failure/success, missed/made -- can be modeled with a binomial distribution."
+
+```{r, echo = FALSE}
+binom.2 <- dbinom(1:100, size = 100, prob = .2)
+
+binom.5 <- dbinom(1:100, size = 100, prob = .5)
+
+binom.75 <- dbinom(1:100, size = 100 , prob = .75)
+
+as.data.frame(rbind(binom.2, binom.5, binom.75)) %>% 
+  mutate(prob = row.names(.)) %>% 
+  tidyr::gather(., "key", "value", -prob) %>% 
+  mutate(key = as.numeric(gsub("V", "", key))) %>% 
+  ggplot(., aes(x = key, y = value, fill = prob), alpha = .5) + 
+  geom_col(alpha = .5) + 
+  scale_fill_brewer(type = "qual", palette = "Dark2") + 
+  theme_minimal()
+```
+
+
+### Exponential Distribution
+
+"We can only know one thing about the exponential distribution: $\mu$ (also expressed as a rate)."
+
+"Just about any arrival process can be approximated by an exponential distribution."
+
+```{r, echo = FALSE}
+data.frame(x = rexp(n = 10000, rate = 3/1.5)) |>
+  ggplot(aes(x = x)) +
+  geom_histogram(color = "black", fill = "white", bins = 15) +
+  theme_minimal() +
+  labs(x = "Customer Inter-arrival Times", y = "Frequency")
+```
+
+"That rate parameter is a bit confusing...the easiest way to express it is as a ratio."
+
+"If 3 people enter the store every minute and a half, than it would be a rate of 3/1.5".
+
+```{r}
+hist(rexp(n = 10000, rate = 3 / 1.5))
+```
+
+"You could also just put the average rate in."
+
+```{r}
+hist(rexp(n = 10000, rate = 2))
+```
+
+"They are really the same thing."
+
+### Poisson Distribution
+
+"The poisson is an interesting distribution -- it tends to deal with count-related variables. It tells us the probability of a count occurring.  We know its $\lambda$."
+
+"The $\lambda$ is just a fancy way of saying the average number of events, or the incidence rate."
+
+```{r, echo = FALSE}
+data.frame(x = rpois(10000, lambda = 4)) |>
+  ggplot(aes(x = x)) +
+  geom_bar(color = "black", fill = "white") +
+  theme_minimal() +
+  labs(x = "Dead plants", y = "Frequency")
+```
+
+"Interestingly, the Poisson distribution has a relationship with the Exponential distribution: Poisson deals with the number of occurrences and the Exponential deals with the time between occurrences."
+
+"Whoa...I've got a lot to learn here.", Ali mumbled.
+
+"All with time!", Alex reassured.
+
+### Uniform Distribution
+
+"While people tend to think about the Gaussian distribution as the most vanilla of all distributions, it really is not -- I would say that distinction belongs to the uniform distribution. We don't even get any fancy Greek letters, just a minimum and a maximum. Why? Because knowing the min and max will tell us that there is an equal probability of drawing a value anywhere within that range."
+
+```{r, echo = FALSE}
+data.frame(x = runif(10000, min = 1, max = 5)) |>
+  # round() |>
+  ggplot(aes(x = x)) +
+  geom_histogram(color = "black", fill = "white") +
+  theme_minimal() +
+  labs(x = "Flower Processing Time", y = "Frequency")
+```
+
+"Sound cool?", Shashi asked.
+
+"For sure!", Ali replied, and went off to find Alex.
+
+## An Important Distinction
+
+As soon as Ali started talking to Alex, a tangent started. "First and foremost, I want to set you straight on something: simulation is not what-if analysis." 
+
+"What's the different?", Ali asked. 
+
+"The what-if analysis isn't really guided by distributions, but more along the lines of low, medium, and high values."
+
+"I think I need an example.", Ali said.
+
+"I thought you'd never ask!", Alex exclaimed.
+
+"Let's look at a really simple process: the number of people who come into a retail store."
+
+"Let's say that every person who buys something in the store, shops for 20 minutes on average, with a standard deviation of 2.5 minutes." 
+
+"We might just be interested to know how much total time those people are in the store."
+
+```{r}
+what_if_times <- c(low_value = 50,
+                   mid_value = 100,
+                   high_value = 150)
+
+what_if_sums <- sapply(what_if_times, function(x) {
+  sum(rnorm(x, mean = 20, sd = 2.5))
+})
+
+what_if_sums
+
+mean(what_if_sums)
+```
+
+"That seems simple enough.", remarked Ali. "Those answers really seem pretty obvious."
+
+Alex nodded. "They definitely do, but we have a potential problem here."
+
+Ali had absolutely zero idea where Alex was going.
+
+"Let me give you some more info; we are giving all of those an equal probability of occurring." Alex asked, "Does that seem reasonable?"
+
+"Probably not.", Ali admitted.
+
+"The most common number of people that come into the score is 100, but the highs and lows rarely happen."
+
+"Check this distribution out:"
+
+```{r, echo = FALSE}
+library(triangle)
+
+hist(rtriangle(100000, a = 50, b = 150, c = 100), breaks = 100)
+```
+
+"In the triangular distribution, we have a few parameters: the lower limit, the upper limit, and the mode."
+
+"That looks wild!", Ali smiled.
+
+"Now, let's see how we can incorporate this into a really small simulation."
+
+```{r}
+library(triangle)
+
+triangle_draws <- rtriangle(n = 1000, a = 50, b = 150, c = 100)
+
+tri_sum <- sapply(triangle_draws, function(x) {
+  sum(rnorm(x, mean = 20, sd = 2.5))
+})
+
+hist(tri_sum)
+```
+
+"Is the average wildly different?", Alex asked.
+
+"Nope!", Ali said, "but that is a much better representation of what we would expect!"
+
+"Using distributions is always the way to go.", Alex said. 
+
+"Shashi said something like that.", Ali replied.
+
+"Things become even more interesting as we start to incorporate more distributions into our problems.", Alex smiled as he began typing.
+
+"I'm sure Shashi showed you the exponential distribution", Alex continued, "so let me show you what we can do with it."
+
+"Let's say that our stores get raw product shipments at a rate of 1 every 3 days, on average."
+
+```{r}
+interarrival_time <- rexp(100, rate = 1/3)
+```
+
+"Now, let's say that the average shipment follows a normal distribution, with a mean of 2 pounds and a standard deviation of .5 pounds."
+
+```{r}
+shipment_pounds <- rnorm(100, mean = 2, sd = .5)
+```
+
+"I think I'm following you.", Ali nodded along.
+
+Alex continued, "Let's just program something small."
+
+"I'd be curious to know how many days it would take to get 100 shipments and how much total weight we would get."
+
+"We will start by creating day 1 in the simulation:"
+
+```{r}
+day <- 1
+```
+
+"And our starting pounds."
+
+```{r}
+total_pounds_delivered <- 0
+```
+
+"Next we can specify how many shipments we would like to test this over."
+
+```{r}
+n_shipments <- 100
+```
+
+"Finally, we need to use a `for` loop to iterate over those 100 shipments."
+
+```{r}
+for(i in 1:n_shipments) {
+  # For every shipment, we want to generate 1 draw from
+  # the normal distribution.
+  shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+  
+  # We also want to generate the rate at which
+  # the shipments will arrive.
+  interarrival_time <- rexp(1, rate = 1/3)
+  
+  # Now we can add the shipped pounds to our total_pounds_delivered.
+  # This will update total_pounds_delivered at every iteration.
+  total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+  
+  # And the same idea is used for keeping track of the days.
+  day <- day + interarrival_time
+}
+```
+
+"Let's see those results!"
+
+```{r}
+day
+
+total_pounds_delivered
+```
+
+"So it would take us about `r round(day)` days to get 100 shipments and we would get about `r round(total_pounds_delivered)`.", Alex noted.
+
+"That is absolutely awesome!", Ali gasped. "It is like we are programming the real world."
+
+"That's right.", Alex nodded. "You are only limited by what you can program."
+
+"I've got one more thing to show you...how to repeat the process."
+
+"All we need to do is to take our complete code:"
+
+```{r, eval = FALSE}
+ day <- 1
+  
+  total_pounds_delivered <- 0
+  
+  n_shipments <- 100
+  
+  for(i in 1:n_shipments) {
+    
+    shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+    
+    interarrival_time <- rexp(1, rate = 1/3)
+    
+    total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+    
+    day <- day + interarrival_time
+  }
+```
+
+"And then throw that into the replicate function!"
+
+```{r}
+reps_100 <- replicate(n = 1000, expr = {
+  day <- 1
+  
+  total_pounds_delivered <- 0
+  
+  n_shipments <- 100
+  
+  for(i in 1:n_shipments) {
+    
+    shipment_pounds <- rnorm(1, mean = 2, sd = .5)
+    
+    interarrival_time <- rexp(1, rate = 1/3)
+    
+    total_pounds_delivered <- total_pounds_delivered + shipment_pounds
+    
+    day <- day + interarrival_time
+  }
+  
+  # This is the only different part; I am just taking my results
+  # and throwing them into a data frame. That way, I am always
+  # returning a data frame!
+  results <- data.frame(days = day,
+                        total_pounds = total_pounds_delivered)
+  
+  results
+}, simplify = TRUE)
+```
+
+"After that runs, `reps_100` will be a weird-looking object, but we can still use it for some histograms."
+
+"We need to refer to the row names of `days` and `total_pounds` to extract the rows out and then `unlist` those rows into a vector:
+
+```{r}
+hist(unlist(reps_100["days",]))
+
+hist(unlist(reps_100["total_pounds",]))
+```
+
+Ali was in awe: "That is coolest thing I've seen."
+
+## ClassOverflow
+
+Let's spend some time together working through the email from earlier.

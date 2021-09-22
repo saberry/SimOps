@@ -1,6 +1,7 @@
 ---
 always_allow_html: true
 ---
+
 # Integer Programming
 
 ## Troubling Solutions
@@ -42,21 +43,47 @@ As per usual, trouble began with an email:
 ```{r}
 library(linprog)
 
+# Remember...the c vector is the top part of the whole problem:
+# 30candy + 40gummies + 80bag
+
 cvec <- c(candy = 30,
           gummies = 40,
           bag = 80)
+
+# The b vector is the margins of the problem:
+# What comes on the right hand side of the 
+# equality sign.
 
 bvec <- c(distillate = 500,
           flower = 200,
           trichromes = 100,
           batch_need = 1000)
 
+# These are the directions -- hopefully not
+# much of a mystery.
+
 constDirs <- c("<=", "<=", "<=", ">=")
+
+# The a matrix comprises all of the rows of
+# the constraint matrix (just not the margins
+# or the directions).
+
+# 1candy + 1gummies - 10bag
+# 4candy + 3gummies - 20bag
+# 1candy + 0gummies - 2bag
+# 1candy + 1gummies + 0bag
 
 aMat <- rbind(dis_const = c(1, 1, -10),
               flow_const = c(4, 3, -20),
               trich_const = c(1, 0, -2),
               batch_const = c(1, 1, 0))
+
+# All together, we have:
+# 30candy + 40gummies + 80bag
+# 1candy + 1gummies - 10bag <= 500
+# 4candy + 3gummies - 20bag <= 200
+# 1candy + 0gummies - 2bag <= 100
+# 1candy + 1gummies + 0bag >= 1000
 
 solveLP(cvec, bvec, aMat, maximum = FALSE,
         const.dir = constDirs)
@@ -79,7 +106,7 @@ library(lpSolve)
 
 test <- lpSolve::lp(direction = "min", objective.in = cvec,
             const.mat = aMat, const.dir = constDirs,
-            const.rhs = bvec, all.int = TRUE, compute.sens = 1)
+            const.rhs = bvec, all.int = TRUE)
 ```
 
 Remember ROI from last time? It has some pretty handy functionality. 
@@ -92,9 +119,20 @@ library(ROI.plugin.glpk)
 We can use all of the objects that we have already created
 
 ```{r}
+# When working within ROI, we string together the entire constraint
+# matrix (A matrix, directions, and the b vector) using the L_constraint
+# function
+
 model_constraints <- L_constraint(L = aMat, 
                                   dir = constDirs, 
                                   rhs = bvec)
+
+# After we string those together, we can throw them OP;
+# this just creates the model, but doesn't actually 
+# solve the problem.
+# The big difference below is in the types column; 
+# this changes it from continuous ("C") to 
+# integer ("I").
 
 model_creation <- OP(objective = cvec, 
                      constraints = model_constraints, 
@@ -202,9 +240,18 @@ A <- rbind(c(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0),
            c(0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0),
            c(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1))
 
+# Remember that the rep function below only serves to replicate whatever
+# you put there. So this:
+# rep("<=", 12)
+# Is the same as:
+# c("<=", "<=", "<=", "<=", "<=", "<=", "<=", "<=", "<=", "<=", "<=", "<=")
+# One is clearly an easier thing to code.
+
 constraints <- L_constraint(A, 
                             c(rep("<=", 3), rep(">=", 4)), 
                             b)
+
+# The length function returns how many items are in the vector.
 
 model <- OP(objective = cMat, 
             constraints = constraints,
@@ -215,8 +262,31 @@ result <- ROI::ROI_solve(model, "glpk", verbose = TRUE)
 
 result$objval
 
-solution(result)
+transportation_solution <- solution(result)
+
+# Just setting names to make life easier.
+
+names(transportation_solution) <- c("g1_p1", "g1_p2", "g1_p3", "g1_p4", 
+                                    "g2_p1", "g2_p2", "g2_p3", "g2_p4",  
+                                    "g3_p1", "g3_p2", "g3_p3", "g3_p4")
 ```
+
+"That's a nice solution!", Ali remarked and then emailed Castel the results:
+
+> Hey Castel, 
+
+> From greenhouse 1, send 850 pounds to processing 1 and 350 pounds to processing 2. 
+
+> From greenhouse 2, send 250 pounds to processing 1 and 750 pounds to processing 4. 
+
+> From greenhouse 3, send 50 pounds to processing 50 and 750 to processing 3.
+
+> All those moves will cost 84000 dollars.
+
+> Let me know if I can help you with anything else,
+
+> Ali
+
 
 ## Binary Integer Programming
 
@@ -239,6 +309,9 @@ The *transportation problem* proved to be an easy one, once it was broken down i
 Turns out, that Blaise was just asking for some version of a *knapsack* problem:
 
 ```{r}
+# Nothing tricky below -- all we are doing is creating a data frame.
+# The data frame contains 3 columns: item, space, and value.
+
 special_items <- data.frame(item = c("cannabis_caviar", "oracle", "fruity_pebbles", 
                                      "loud_dream", "white_fire", "j1", 
                                      "hammerhead", "sista", "goblin", 
@@ -252,7 +325,14 @@ special_items <- data.frame(item = c("cannabis_caviar", "oracle", "fruity_pebble
                                       1600, 2325, 1005, 
                                       750, 250, 875))
 
+# Below is just a little bit different from what we have seen:
+# instead of specifying a whole vector on the RHS, we just
+# have a single number. We are really only rocking with 
+# a single constraint.
+
 constraints <- L_constraint(special_items$space, "<=", 10) 
+
+# Going to set those variables to be integers.
 
 model <- OP(objective = special_items$value, 
             constraints = constraints,
@@ -260,6 +340,13 @@ model <- OP(objective = special_items$value,
             maximum = TRUE)
 
 solved_model <- ROI_solve(model)
+
+# The line below looks weird, but we are literally saying
+# to take our solution and then set the names of that 
+# data frame to the item names from our special_items 
+# data frame. The |> is R's native pipe operator. 
+# The only reason we are doing this is to make the solution
+# easier to see (i.e., which itmes should we select).
 
 solution(solved_model) |> 
   setNames(special_items$item)

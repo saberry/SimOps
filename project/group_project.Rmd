@@ -1,0 +1,118 @@
+---
+title: "Final Project"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, comment = "")
+```
+
+The Cloud Cannabis Company (Cloud) operates 4 dispensaries within Michigan, with a 5th opening soon in Detroit. Like most business in this space, they are faced with intense competition and an ever-growing consumer base.
+
+## Stocking Shelves
+
+Across the 4 current locations, Cloud offers product categories such as flower, pre-rolls, concentrates, and edibles. 
+
+For each of these products, average prices (retail), costs (Cloud's acquisition cost), and demand  are listed below:
+
+```{r}
+data.frame(product = c("flower (3.5 grams)", "pre-rolls (1 gram)", 
+                       "concentrates (1 gram)", "edibles (100 mg)"), 
+           price = c(45, 12, 60, 15), 
+           cost = c(25, 5, 50, 10), 
+           demand = c(37, 15, 20, 28)) |>
+  flextable::flextable(cwidth = 2.5, cheight = .15)
+```
+
+Demand is an approximation of the percentage of sales for each product type. 
+
+Cloud's annual product budget is 850,000 dollars. Given the demand needs, how should Cloud allocate their budget over the product types to maximize revenue?
+
+## Consumers: A Fickle Bag
+
+Industry experts are seeing the shift towards a more concentrate and edible-dominant field. If edibles or concentrates vary between 25% and 50%, how does that change Cloud's product strategy.
+
+## Moving Product
+
+Currently, Cloud receives products from the following companies: Better Provisioning (Kalamazoo), Harbor Farmz (Kalamazoo), Hazy Farms (Detroit), and Rare Michigan Genetics (Kalamazoo). Due to different locations, each company has slightly different flat shipping rates to each of the 4 current locations:
+
+```{r, results='asis'}
+data.frame(company = c(rep("Better Provisioning", 4), 
+                       rep("Harbor Farmz", 4), 
+                       rep("Hazy Farms", 4), 
+                       rep("Rare Michigan Genetics", 4)), 
+           store = rep(c("Ann Arbor", "Muskegon", "Utica", "Traverse City"), 4), 
+           cost = c(10, 8, 12, 20, 
+                    10, 8, 12, 20, 
+                    5, 10, 5, 25,
+                    10, 8, 12, 20)) |>
+  flextable::flextable(cwidth = 2.5, cheight = .15)
+```
+
+In addition to the shipping costs to each location, each store has needed flower product and each grower only has so much product. Those values are listed below:
+
+```{r}
+data.frame(company = c("Better Provisioning", "Harbor Farmz",  
+                       "Hazy Farms", "Rare Michigan Genetics"),  
+           supply = c(700, 300, 550, 420), 
+           store = c("Ann Arbor", "Muskegon", "Utica", "Traverse City"), 
+           demand = c(650, 200, 450, 250)) |>
+  flextable::flextable(cwidth = 2.5, cheight = .15)
+```
+
+## Demand Variability
+
+While the Detroit store has not opened yet, there is some concern within the Ann Arbor store that demand will decrease if the Detroit store starts doing well. Given the locations of Muskegon and Traverse City, nobody anticaptes much change in the demand. Incorporate potential shipping costs into the *Moving Product* model and introduce demand variability for both Detroit and Ann Arbor.
+
+## Employees
+
+Before the new store opens in Detroit, Cloud has already started the hiring process. Currently there are 20 people willing to work any job within the dispensary, but they have given preferences for each of the main departments. In the `job_preference_list` file, every person is listed with their preference values for each functional unit: the higher the value, the more a person would like to work in that department. Ideally, the employees are distributed equally across the functional units.
+
+## From Sales to Scales
+
+As with most dispensaries, Cloud is contemplating a leap into the production space. Unfortunately, it is not without a fair amount of risk. The risk is not about money (although the automation involved is costly), but about time. Generally, the following products get created from a plant: flower and concentrates. 
+
+From start to finish, the process to produce flower is as follows:
+
+1. Flowering stage (min: 8 weeks; max: 11 weeks)
+
+2. Drying stage (min: 7 days; max: 10 days)
+
+3. Trimming stage (mu = 1 hour; sigma = 15 minutes)
+
+4. Curing stage (min: 1 month; max: 4 months)
+
+From start to finish, the process to produce concentrates is as follows:
+
+1. Flowering stage (min: 8 weeks; max: 11 weeks)
+
+2. Drying stage (min: 7 days; max: 10 days)
+
+3. Freeze stage (20 minutes)
+
+4. Extraction stage (mu: 15 minutes; sigma: 2 minutes)
+
+5. Filtration stage (mu: 1 hour; sigma: 8 minutes)
+
+6. Solvent evaporation stage (1 hour)
+
+7. Decarbonization stage (mu: 2 days; sigma: 8 hours)
+
+8. Distillation stage (mu: 18 hours; sigma 2 hours)
+
+About 45% of a given grow goes toward flower, while the remaining 55% goes towards concentrates. How long should Cloud anticipate a first grow taking?
+
+## Return On Investment
+
+The cost to start plant production is high. The following table offers a break down of some yearly costs for a 10,000 square foot greenhouse:
+
+```{r}
+data.frame(item = c("Rent", "Lighting", "Climate Control", 
+                    "Irrigation", "Consumables"),  
+           low = c(100000, 5000, 10000, 2500, 25000), 
+           mid = c(150000, 10000, 15000, 3000, 50000), 
+           high = c(300000, 20000, 17000, 5000, 75000)) |>
+  flextable::flextable(cwidth = 2.5, cheight = .15)
+```
+
+A high-functioning greenhouse can churn out an average of 1,400 pounds of dried product per year. However, a great number of things can happen: power failures, pests, poor yield. While the average might be 1,400 pounds, there is some variance around that (roughly 300 pounds as a standard deviation). If 1,400 pounds will return a gross profit of 1,000,000 million dollars, how much would Cloud likely make over the next 5 years?  

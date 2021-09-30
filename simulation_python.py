@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import random
 
 days = 65
 
@@ -22,25 +23,28 @@ alive_plants
 
 
 sim_runs = [0] * 1000
-
+t1_start = process_time()
 for j in range(1, 1000):
-  print("Starting run %d" % (j))
   days = 65
 
   alive_plants = 1000
 
   for i in range(1, days):
-  
+
     days = i
-  
-    live_dead = np.random.binomial(1, .999, size=alive_plants)
+
+    #live_dead = np.random.binomial(1, .999, size=alive_plants)
+    live_dead = random.choices(range(0, 1), k = alive_plants)
 
     daily_dead = sum(live_dead == 0)
-  
+
     alive_plants = alive_plants - daily_dead
-      
+
   sim_runs[j] = alive_plants
 
+t1_end = process_time()
+
+t1_end - t1_start
 
 # Generate data on commute times.
 size, scale = 1000, 10

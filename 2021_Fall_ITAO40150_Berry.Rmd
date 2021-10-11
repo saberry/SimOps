@@ -19,13 +19,15 @@ knitr::opts_chunk$set(echo = FALSE, eval = TRUE, message = FALSE, warning = FALS
 
 # Office Hours
 
-Monday through Thursday: 10:00 to 12:00
+Monday & Wednesday: 10:00 to 12:00
 
-Most Fridays: 10:00 to 2:00
+Tuesday & Thursday: 12:00 to 1:30
+
+Most Fridays: 10:00 to 12:00
 
 # Class Days and Time
 
-Monday and Wednesday: Stayer B003
+Monday and Wednesday: B051
 
 - Section 1: 2:00 - 3:15
 
@@ -57,11 +59,9 @@ After learning a topic, you will work individually in class to solve one or two 
 
 ## Homework
 
-There will be three assignments which will be graded. These assignments and suggested due dates will be announced during the class. Each person should turn in their own assignment, but you are absolutely free to collaborate with people in class. Collaboration does not meaning copying -- it means that you have worked together to solve the problem and both people have their own unique answers to the problem. It is advised to start the assignments early and bring questions to office hours.
+There will be three assignments which will be graded. These assignments and suggested due dates will be announced during the class. 
 
-A significant portion of your grade will come from the homework skills map. The skills roadmap has different levels (bronze, silver, and gold). Each level must be completed in order (i.e., you cannot skip silver and go straight to gold from bronze). Silver and gold levels essentially act as modifiers to not only your grade, but also your understanding.
-
-Please feel free to work together on the bronze level of homework (i.e., not the optional sections), but each assignment needs to be your own work.  Putting your heads together to formulate an analytic attack plan is perfect (we all stands on the shoulders of giants), but copying and pasting text from each other is unacceptable. In other words, your code and words should not look like one of your classmate's. 
+Please feel free to work together on the bronze level of homework, but each assignment needs to be your own work.  Putting your heads together to formulate an analytic attack plan is perfect (we all stands on the shoulders of giants), but copying and pasting text from each other is unacceptable. In other words, your code and words should not look like one of your classmate's. 
 
 ## Midterm
 
@@ -70,7 +70,6 @@ The midterm will require programming. However, the scope of the midterm is limit
 ## Presentations
 
 The final for this class will be a group presentation (and accompanying write-up). You will be graded on the in-class presentation, the write-up, and peer evaluations.
-
 
 # Grading
 
@@ -93,23 +92,27 @@ Total -- 310 points
 library(dplyr)
 data.frame(Week = c(1, "", 2, "", 3, "",
                     4, "", 5, "", 6, "", 
-                    7, ""),
-          Date = c("08/24 (T)", 
-                   "08/26 (Tr)",
-                   "08/31 (T)", 
-                   "09/02 (Tr)", 
-                   "09/07 (T)", 
-                   "09/09 (Tr)", 
-                   "09/14 (T)", 
-                   "09/16 (Tr)", 
-                   "09/21 (T)", 
-                   "09/23 (Tr)", 
-                   "09/28 (T)",
-                   "09/30 (Tr)",
-                   "10/05 (T)",
-                   "10/07 (Tr)"), 
+                    7, "", 8, ""),
+          Date = c("10/12 (T)", 
+                   "10/14 (Tr)",
+                   "10/19 (T)", 
+                   "10/21 (Tr)", 
+                   "10/26 (T)", 
+                   "10/28 (Tr)", 
+                   "11/02 (T)", 
+                   "11/04 (Tr)", 
+                   "11/16 (T)", 
+                   "11/18 (Tr)", 
+                   "11/23 (T)",
+                   "11/25 (Tr)",
+                   "11/30 (T)",
+                   "12/02 (Tr)", 
+                   "12/07 (T)", 
+                   "Final"), 
           Topic = c("Software Prep", 
-                    "R Markdown", 
+                    "R Markdown",
+                    "Fall", 
+                    "Break",
                     "Linear Programming 1", 
                     "Linear Programming 2",
                     "Process Simulation 1", 
@@ -117,24 +120,18 @@ data.frame(Week = c(1, "", 2, "", 3, "",
                     "Midterm Review",
                     "Midterm", 
                     "Integer Programming",
-                    "Monte Carlo Simulation 1",
+                    "Thanksgiving",
                     "Monte Carlo Simulation 2", 
                     "Project Day", 
                     "Project Day", 
                     "Presentations"), 
-           Assignments = c("", 
-                        "", 
-                        "HW1", 
-                        "",
-                        "HW2",
-                        "",
-                        "",
-                        "",
-                        "",
-                        "HW3",
-                        "",
-                        "",
-                        "",
-                        "")) %>% 
+           Assignments = c("", "", 
+                        "", "",
+                        "HW1 Assigned", "",
+                        "HW2 Assigned", "",
+                        "", "",
+                        "", "",
+                        "HW3 Assigned",  "", 
+                        "", "")) #%>% 
   stargazer::stargazer(., summary = FALSE, header = FALSE, title = "Tentative Schedule")
 ```
